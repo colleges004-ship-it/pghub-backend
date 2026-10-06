@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PG Hub - Owner Operations Console</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { 
+            background-color: #0d0e12; 
+            color: #e2e8f0; 
+            min-height: 100vh; 
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Console Headers */
+        header {
+            border-bottom: 1px solid #222738;
+            padding-bottom: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 { 
+            color: #f8fafc; 
+            font-size: 22px; 
+            font-weight: 700; 
+        }
+
+        h1 span { 
+            font-size: 11px; 
+            background: #1e2230; 
+            color: #94a3b8; 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            font-weight: 500; 
+            border: 1px solid #2e354f;
+            margin-left: 10px;
+        }
+
+        .back-btn {
+            background-color: #1e2230;
+            border: 1px solid #2e354f;
+            color: #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .back-btn:hover {
+            background-color: #2a3044;
+            color: #fff;
+        }
+
+        h2 {
+            font-size: 16px;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            border-bottom: 1px solid #222738;
+            padding-bottom: 10px;
+        }
+
+        /* Section Panels */
+        .panel {
+            background: #151821;
+            border: 1px solid #222738;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Inputs & Textareas */
+        input[type="text"], 
+        input[type="number"],
+        input[type="file"] {
+            width: 100%;
+            padding: 11px 14px;
+            background: #1e2230;
+            border: 1px solid #2e354f;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #f8fafc;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus, 
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Custom File Input Styling */
+        input[type="file"]::file-selector-button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 11px;
+            transition: background 0.2s;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: #4f46e5;
+        }
+
+        /* Checkbox Containers */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #cbd5e1;
+            background: #1e2230;
+            padding: 10px;
+            border: 1px solid #2e354f;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .checkbox-container:hover {
+            background: #232838;
+        }
+        .checkbox-container input {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #6366f1;
+        }
+
+        /* Buttons */
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #6366f1;
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .btn-primary:hover {
+            background-color: #4f46e5;
+        }
+
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+        .btn-danger:hover {
+            background-color: rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+        .btn-success:hover {
+            background-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px dashed #222738;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Asset Operations Console<span>Root Terminal</span></h1>
+            <a href="/rooms.html" class="back-btn">← Back to Ledger</a>
+        </header>
+
+        <!-- PANEL 1: REGISTER NEW ROOM -->
+        <section class="panel">
+            <h2>Register New PG Asset</h2>
+            <form id="addRoomForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Room Number</label>
+                    <input type="text" name="roomNumber" placeholder="e.g. 102" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Room Description</label>
+                    <input type="text" name="title" value="Premium Double Sharing Room" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" value="Salt Lake, Block JC" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Monthly Rent (₹)</label>
+                    <input type="number" name="pricePerMonth" value="6200" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Select Asset Preview Image</label>
+                    <input type="file" name="image" accept="image/*" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Services</label>
+                    <div class="services-grid">
+                        <label class="checkbox-container"><input type="checkbox" name="facilities" value="WiFi"> Wi-Fi</label>
+                        <label class="checkbox-container"><input type="checkbox" name="facilities" value="AC"> AC</label>
+                        <label class="checkbox-container"><input type="checkbox" name="facilities" value="Geyser"> Geyser</label>
+                        <label class="checkbox-container"><input type="checkbox" name="facilities" value="Laundry"> Laundry</label>
+                        <label class="checkbox-container"><input type="checkbox" name="facilities" value="None"> No Facilities</label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-primary">Upload Asset Details</button>
+            </form>
+        </section>
+
+        <!-- PANEL 2: MANAGE EXISTING INVENTORY -->
+        <section class="panel">
+            <h2>Manage Existing Records</h2>
+            
+            <div class="form-group">
+                <label>Target Asset ID</label>
+                <input type="number" id="roomId" placeholder="e.g. 3">
+            </div>
+            
+            <hr>
+            
+            <h3 style="font-size: 12px; color: #64748b; margin: 15px 0 20px 0; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Update Mutation Payload</h3>
+
+            <div class="form-group">
+                <label>New Room Number</label>
+                <input type="text" id="updateRoomNumber" placeholder="e.g. 104">
+            </div>
+            
+            <div class="form-group">
+                <label>New Title</label>
+                <input type="text" id="updateTitle" value="Updated Room Title">
+            </div>
+            
+            <div class="form-group">
+                <label>New Location</label>
+                <input type="text" id="updateLocation" value="Updated Location">
+            </div>
+            
+            <div class="form-group">
+                <label>New Rent Price (₹)</label>
+                <input type="number" id="updatePrice" value="7000">
+            </div>
+
+            <div class="form-group">
+                <label>Update Services</label>
+                <div class="services-grid">
+                    <label class="checkbox-container"><input type="checkbox" class="update-facility" value="WiFi"> Wi-Fi</label>
+                    <label class="checkbox-container"><input type="checkbox" class="update-facility" value="AC"> AC</label>
+                    <label class="checkbox-container"><input type="checkbox" class="update-facility" value="Geyser"> Geyser</label>
+                    <label class="checkbox-container"><input type="checkbox" class="update-facility" value="Laundry"> Laundry</label>
+                    <label class="checkbox-container"><input type="checkbox" class="update-facility" value="None"> No Facilities</label>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" onclick="handleDelete()" class="btn-danger">Delete Room Record</button>
+                <button type="button" onclick="handleUpdate()" class="btn-success">Push Update Changes</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    document.getElementById('addRoomForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch('/api/rooms/add', {
+            method: 'POST',
+            body: formData
+        })
+        .then(async response => {
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(errorMessage);
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert("🎉 Room Added Successfully! Redirecting to inventory ledger...");
+            window.location.href = '/rooms.html'; 
+        })
+        .catch(err => {
+            alert(err.message);
+        });
+    });
+
+    function handleDelete() {
+        const id = document.getElementById('roomId').value;
+        if(!id) return alert("Please specify a Room ID");
+        
+        if(!confirm("Are you sure you want to permanently purge room #" + id + "?")) return;
+
+        fetch('/api/rooms/delete/' + id, { method: 'DELETE' })
+            .then(res => res.text())
+            .then(msg => { alert(msg); location.reload(); })
+            .catch(err => alert("Error: " + err));
+    }
+
+    function handleUpdate() {
+        const id = document.getElementById('roomId').value;
+        if(!id) return alert("Please specify a Room ID");
+
+        const selectedFacilities = [];
+        const checkBoxes = document.querySelectorAll('.update-facility:checked');
+        checkBoxes.forEach((cb) => {
+            selectedFacilities.push(cb.value);
+        });
+
+        if (selectedFacilities.length === 0) {
+            alert("⚠️ Please select at least one facility (or check 'No Facilities' if applicable) before updating!");
+            return; 
+        }
+
+        const formData = new FormData();
+        formData.append('roomNumber', document.getElementById('updateRoomNumber').value);
+        formData.append('title', document.getElementById('updateTitle').value);
+        formData.append('location', document.getElementById('updateLocation').value);
+        formData.append('pricePerMonth', document.getElementById('updatePrice').value);
+        
+        selectedFacilities.forEach(facility => {
+            formData.append('facilities', facility);
+        });
+
+        fetch('/api/rooms/update/' + id, {
+            method: 'PUT',
+            body: formData
+        })
+        .then(async res => {
+            if (!res.ok) {
+                const errorMsg = await res.text();
+                throw new Error(errorMsg);
+            }
+            return res.json();
+        })
+        .then(data => { 
+            alert("Updated successfully!"); 
+            console.log(data); 
+            location.reload(); 
+        })
+        .catch(err => alert("Error updating room: " + err));
+    }
+</script>
+</body>
+</html>

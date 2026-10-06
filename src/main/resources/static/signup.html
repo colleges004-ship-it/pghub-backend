@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PG Hub - Register Owner Account</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { 
+            background-color: #0d0e12; 
+            color: #e2e8f0; 
+            min-height: 100vh; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .signup-panel {
+            background: #151821;
+            border: 1px solid #222738;
+            border-radius: 8px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { font-size: 20px; color: #f8fafc; font-weight: 700; margin-bottom: 5px; }
+        p { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            background: #1e2230;
+            border: 1px solid #2e354f;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #f8fafc;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover { background-color: #059669; }
+
+        .message-box {
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .error { background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; }
+        .success { background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; }
+
+        .login-link { text-align: center; margin-top: 20px; font-size: 13px; color: #64748b; }
+        .login-link a { color: #10b981; text-decoration: none; font-weight: bold; }
+        .login-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="signup-panel">
+        <header>
+            <h1>Create Account</h1>
+            <p>Owner Registration</p>
+        </header>
+
+        <div class="message-box" id="msgBox"></div>
+
+        <form id="signupForm">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" required>
+            </div>
+
+            <button type="submit">Register Account</button>
+        </form>
+
+        <div class="login-link">
+            Already registered? <a href="/login.html">Log In</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgBox = document.getElementById('msgBox');
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    msgBox.className = 'message-box success';
+                    msgBox.textContent = 'Account created successfully! Redirecting to login...';
+                    msgBox.style.display = 'block';
+                    setTimeout(() => window.location.href = '/login.html', 1500);
+                } else {
+                    msgBox.className = 'message-box error';
+                    msgBox.textContent = data.error || 'Failed to register account.';
+                    msgBox.style.display = 'block';
+                }
+            } catch (err) {
+                msgBox.className = 'message-box error';
+                msgBox.textContent = 'Network error. Please try again.';
+                msgBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
