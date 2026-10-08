@@ -150,4 +150,17 @@ public class PgRoomController {
         return "redirect:/rooms.html";
     }
 
+    @GetMapping("/api/rooms/public")
+        public List<PgRoom> getAllPublicRooms() {
+        return roomRepository.findAll(); 
+    }
+
+    @PostMapping("/api/rooms")
+        public ResponseEntity<PgRoom> createRoom(@RequestBody PgRoom room) {
+         // Save room entity to database
+        PgRoom savedRoom = roomRepository.save(room);
+        return ResponseEntity.ok(savedRoom);
+}
+
+
 }
