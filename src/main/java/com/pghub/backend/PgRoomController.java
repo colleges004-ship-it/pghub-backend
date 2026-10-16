@@ -160,6 +160,29 @@ public class PgRoomController {
          // Save room entity to database
         PgRoom savedRoom = roomRepository.save(room);
         return ResponseEntity.ok(savedRoom);
+    }
+
+    // Don't forget to Autowire the TenantRepository at the top of your controller!
+@Autowired
+private TenantRepository tenantRepository;
+
+@PostMapping("/{id}/tenants/add")
+public ResponseEntity<?> addTenantToRoom(@PathVariable Long id, @RequestBody Tenant tenant) {
+    return roomRepository.findById(id).map(room -> {
+        
+        // Prevent duplicate IDs from crashing the app
+        if(tenantRepository.existsByGovernmentIdNumber(tenant.getGovernmentIdNumber())) {
+            return ResponseEntity.badRequest().body("A tenant with this Government ID is already registered.");
+        }
+
+        // Link the room to the person
+        tenant.setPgRoom(room);
+        
+        // Save the person to the database
+        tenantRepository.save(tenant);
+        
+        return ResponseEntity.ok("Legal tenant record stored successfully.");
+    }).orElse(ResponseEntity.notFound().build());
 }
 
 
