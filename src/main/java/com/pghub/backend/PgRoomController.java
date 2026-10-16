@@ -147,7 +147,7 @@ public class PgRoomController {
 
     @GetMapping("/")
         public String redirectToHome() {
-        return "redirect:/rooms.html";
+        return "redirect:/dashboard.html";
     }
 
     @GetMapping("/api/rooms/public")

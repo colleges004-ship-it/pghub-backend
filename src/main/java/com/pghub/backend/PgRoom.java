@@ -46,6 +46,14 @@ public class PgRoom {
         return complaints;
     }
     public void  setComplaints( List<Complaint> complaints){ this.complaints=complaints;}
+
+    // Add this new relationship for Tenants
+    @OneToMany(mappedBy = "pgRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Tenant> tenants = new ArrayList<>();
+
+    public List<Tenant> getTenants() { return tenants; }
+    public void setTenants(List<Tenant> tenants) { this.tenants = tenants; }
         
 
 
