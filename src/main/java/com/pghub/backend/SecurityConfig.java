@@ -29,7 +29,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login.html")
                 .loginProcessingUrl("/perform_login")
-                .defaultSuccessUrl("/rooms.html",true)
+                .defaultSuccessUrl("/dashboard.html", true)
                 .failureForwardUrl("/login.html?error=true")
                 .permitAll()
             )

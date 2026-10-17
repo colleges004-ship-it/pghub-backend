@@ -3,368 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Portal - Dark Ledger & Maintenance</title>
+    <title>Find Your Ideal PG - PG Hub</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0d0e12; color: #e2e8f0; display: flex; min-height: 100vh; overflow-x: hidden; }
-        
-        /* Fixed Left Panel - Dark Mode Accent */
-        .sidebar { width: 310px; background: #151821; border-right: 1px solid #222738; padding: 30px 20px; position: fixed; top: 0; bottom: 0; left: 0; display: flex; flex-direction: column; gap: 24px; z-index: 10; box-shadow: 4px 0 15px rgba(0,0,0,0.3); }
-        .sidebar-title { font-size: 18px; color: #f8fafc; font-weight: 700; border-bottom: 1px solid #222738; padding-bottom: 12px; letter-spacing: 0.5px; }
-        
-        .control-group { display: flex; flex-direction: column; gap: 8px; }
-        .control-label { font-size: 11px; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .search-input { width: 100%; padding: 11px 14px; background: #1e2230; border: 1px solid #2e354f; border-radius: 6px; font-size: 14px; color: #f8fafc; transition: all 0.2s; }
-        .search-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
-        
-        .status-select { width: 100%; padding: 11px 14px; background: #1e2230; border: 1px solid #2e354f; border-radius: 6px; font-size: 14px; color: #cbd5e1; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        
-        .amenities-list { display: flex; flex-direction: column; gap: 10px; }
-        .filter-option { display: flex; align-items: center; gap: 12px; font-size: 14px; cursor: pointer; font-weight: 600; color: #94a3b8; background: #1e2230; padding: 10px 14px; border: 1px solid #2e354f; border-radius: 6px; }
-        .filter-option input { cursor: pointer; width: 15px; height: 15px; accent-color: #6366f1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        body { background-color: #0b0f19; color: #f1f5f9; min-height: 100vh; }
 
-        .nav-btn { background-color: #6366f1; color: white; padding: 12px; border: none; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; margin-top: auto; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-
-        /* Main Workspace Area */
-        .main-content { margin-left: 310px; flex-grow: 1; padding: 40px; background-color: #0d0e12; transition: margin-right 0.3s ease; }
-        header { margin-bottom: 30px; border-bottom: 1px solid #222738; padding-bottom: 20px; }
-        h1 { color: #f8fafc; font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
-        h1 span { font-size: 12px; background: #1e2230; color: #94a3b8; padding: 4px 10px; border-radius: 4px; font-weight: 500; border: 1px solid #2e354f; }
-
-        /* Table Design */
-        .ledger-wrapper { background: #151821; border: 1px solid #222738; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        thead { background-color: #1e2230; border-bottom: 2px solid #222738; }
-        th { padding: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #6366f1; letter-spacing: 0.5px; }
-        td { padding: 16px; border-bottom: 1px solid #222738; vertical-align: middle; font-size: 14px; color: #cbd5e1; }
-
-        .thumbnail { width: 75px; height: 52px; object-fit: cover; border-radius: 6px; background-color: #1e2230; border: 1px solid #2e354f; }
-        .room-id-badge { font-weight: bold; color: #6366f1; background: rgba(99, 102, 241, 0.15); padding: 4px 8px; border-radius: 4px; font-size: 12px; border: 1px solid rgba(99, 102, 241, 0.3); }
-
-        .room-no-container { display: flex; align-items: center; gap: 8px; }
-
-        /* Pulsing Red Dot Badge with Complaint Count */
-        .btn-badge { 
-            position: absolute; 
-            top: -6px; 
-            right: -6px; 
-            min-width: 16px;
-            height: 16px;
-            background-color: #ef4444; 
-            color: #ffffff;
-            font-size: 10px;
-            font-weight: 800;
-            line-height: 1;
-            border-radius: 50%; 
-            display: flex; 
+        /* Navigation Header */
+        .navbar {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #1e293b;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 8px #ef4444; 
-            animation: pulse 1.5s infinite; 
-            border: 1.5px solid #151821;
-            padding: 2px;
         }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        .brand { font-size: 22px; font-weight: 800; color: #38bdf8; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .owner-btn {
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #334155;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
         }
+        .owner-btn:hover { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
 
-        /* Facilities tags */
-        .facilities-container { display: flex; flex-wrap: wrap; gap: 6px; max-width: 220px; }
-        .facility-tag { background: #1e2230; color: #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px; border: 1px solid #2e354f; }
+        /* Hero Banner */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: radial-gradient(circle at top, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+        }
+        .hero h1 { font-size: 38px; font-weight: 800; margin-bottom: 12px; color: #ffffff; }
+        .hero p { color: #94a3b8; font-size: 16px; max-width: 600px; margin: 0 auto; }
 
-        /* Availability statuses */
-        .status-container { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-        .status-active { color: #34d399; }
-        .status-active .status-dot { background-color: #34d399; box-shadow: 0 0 8px #34d399; }
-        .status-vacant { color: #f87171; }
-        .status-vacant .status-dot { background-color: #f87171; box-shadow: 0 0 8px #f87171; }
-
-        .btn-group { display: flex; gap: 8px; justify-content: flex-end; }
-        .toggle-btn { background-color: #1e2230; border: 1px solid #2e354f; color: #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s; }
-        .toggle-btn:hover { background-color: #2a3044; }
+        /* Search Section */
+        .search-container {
+            max-width: 1000px;
+            margin: 0 auto 40px;
+            padding: 0 20px;
+        }
+        .search-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            flex-wrap: wrap;
+        }
+        .search-input-group { flex: 2; min-width: 240px; position: relative; }
+        .search-box input, .search-box select {
+            width: 100%;
+            padding: 14px 16px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f8fafc;
+            font-size: 15px;
+            outline: none;
+        }
+        .search-box input:focus, .search-box select:focus { border-color: #38bdf8; }
         
-        .manage-btn { 
-            background-color: rgba(99, 102, 241, 0.1); 
-            border: 1px solid rgba(99, 102, 241, 0.3); 
-            color: #818cf8; 
-            padding: 8px 12px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 12px; 
-            font-weight: 600; 
-            position: relative; 
+        /* Grid Layout */
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 28px;
+        }
+
+        /* Room Cards */
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: #38bdf8;
+            box-shadow: 0 12px 30px -10px rgba(56, 189, 248, 0.2);
+        }
+        .card-img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: #0f172a;
+        }
+        .card-img { width: 100%; height: 100%; object-fit: cover; }
+        .card-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            color: #38bdf8;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .card-body { padding: 22px; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-size: 20px; font-weight: 700; color: #f8fafc; margin-bottom: 6px; }
+        .card-location { font-size: 14px; color: #94a3b8; display: flex; align-items: center; gap: 4px; margin-bottom: 16px; }
+        
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid #334155;
+        }
+        .card-price { font-size: 22px; font-weight: 800; color: #10b981; }
+        .card-price span { font-size: 13px; color: #64748b; font-weight: 400; }
+        
+        .action-btn {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
             transition: background 0.2s;
         }
-        .manage-btn:hover { background-color: rgba(99, 102, 241, 0.2); }
-
-        /* SIDE PANEL / DRAWER FOR COMPLAINTS */
-        .drawer { position: fixed; right: -350px; top: 0; width: 350px; height: 100vh; background: #151821; border-left: 1px solid #222738; box-shadow: -5px 0 25px rgba(0,0,0,0.5); transition: right 0.3s ease; z-index: 100; padding: 30px 24px; display: flex; flex-direction: column; }
-        .drawer.open { right: 0; }
-        .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222738; padding-bottom: 15px; margin-bottom: 20px; }
-        .drawer-title { font-size: 18px; font-weight: 700; color: #f8fafc; }
-        .close-drawer { background: none; border: none; color: #64748b; font-size: 24px; cursor: pointer; }
-        .close-drawer:hover { color: #f8fafc; }
-
-        .complaint-list-wrapper { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .complaint-item { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #1e2230; border-radius: 6px; border-left: 3px solid #ef4444; border: 1px solid #2e354f; border-left-width: 4px; }
-        .complaint-item.resolved { border-left-color: #10b981; opacity: 0.65; }
-        .complaint-text { font-size: 13px; color: #f8fafc; word-break: break-word; }
-        .comp-btn { align-self: flex-end; padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        .comp-btn.resolve { background: #10b981; color: #fff; }
-        .comp-btn.reopen { background: #f59e0b; color: #fff; }
-
-        .add-complaint-box { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #222738; padding-top: 20px; }
-        .add-complaint-box input { width: 100%; padding: 11px 14px; background: #1e2230; border: 1px solid #2e354f; color: #fff; border-radius: 6px; font-size: 14px; }
-        .add-complaint-box button { background: #6366f1; color: white; border: none; padding: 11px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
-        .add-complaint-box button:hover { background-color: #4f46e5; }
-
-        .no-data { text-align: center; padding: 40px; color: #64748b; font-style: italic; }
+        .action-btn:hover { background: #0284c7; color: #ffffff; }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="sidebar-title">Filters</div>
-        <div class="control-group">
-            <span class="control-label">Search Room No.</span>
-            <input type="text" id="roomSearchInput" class="search-input" placeholder="🔍 e.g. 102..." onkeyup="applyFilters()">
-        </div>
-        <div class="control-group">
-            <span class="control-label">Availability Status</span>
-            <select id="roomStatusFilter" class="status-select" onchange="applyFilters()">
-                <option value="all">All Statuses</option>
-                <option value="available">🟢 Vacant / Available</option>
-                <option value="occupied">🔴 Occupied</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <span class="control-label">Filter Amenities</span>
-            <div class="amenities-list">
-                <label class="filter-option"><input type="checkbox" class="facility-filter" value="WiFi" onchange="applyFilters()"> Wi-Fi</label>
-                <label class="filter-option"><input type="checkbox" class="facility-filter" value="AC" onchange="applyFilters()"> AC</label>
-                <label class="filter-option"><input type="checkbox" class="facility-filter" value="Geyser" onchange="applyFilters()"> Geyser</label>
-                <label class="filter-option"><input type="checkbox" class="facility-filter" value="Laundry" onchange="applyFilters()"> Laundry</label>
-            </div>
-        </div>
-        <a href="/upload-test.html" class="nav-btn">+ Add New Inventory</a>
-    </aside>
+    <nav class="navbar">
+        <a href="/" class="brand">🏢 PG Hub Marketplace</a>
+        <a href="/login.html" class="owner-btn">Owner Portal</a>
+    </nav>
 
-    <main class="main-content" id="mainContent">
-        <header>
-            <h1>Property Registry <span>Owner Operations Terminal</span></h1>
-        </header>
-
-        <div class="ledger-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 70px;">ID</th>
-                        <th style="width: 130px;">Room No.</th>
-                        <th style="width: 90px;">Preview</th>
-                        <th>Room Description</th>
-                        <th>Monthly Rent</th>
-                        <th>Amenities</th>
-                        <th>Availability</th>
-                        <th style="text-align: right; width: 250px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="ledgerBody">
-                    <tr>
-                        <td colspan="8" class="no-data">Loading asset registration index...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <!-- SLIDE OUT DRAWER COMPONENT FOR LOGS -->
-    <div id="complaintDrawer" class="drawer">
-        <div class="drawer-header">
-            <div class="drawer-title" id="drawerRoomTitle">Room Log</div>
-            <button class="close-drawer" onclick="closeDrawer()">&times;</button>
-        </div>
-        <div class="complaint-list-wrapper" id="drawerComplaintsList">
-            <!-- Populated via JS -->
-        </div>
-        <div class="add-complaint-box">
-            <span class="control-label">File New Complaint</span>
-            <input type="text" id="newComplaintInput" placeholder="Write down utility error...">
-            <button onclick="submitNewComplaint()">Log Incident</button>
-        </div>
+    <div class="hero">
+        <h1>Find Your Next Home Away From Home</h1>
+        <p>Explore verified PG accommodations with real-time availability and transparent pricing.</p>
     </div>
 
-    <script>
-        let allRoomsMemory = []; 
-        let activeDrawerRoomId = null;
-
-        document.addEventListener("DOMContentLoaded", fetchLedger);
-
-        function fetchLedger() {
-            fetch('/api/rooms/all')
-                .then(res => { if (!res.ok) throw new Error("Backend connection lost"); return res.json(); })
-                .then(rooms => {
-                    allRoomsMemory = rooms;
-                    renderTableData(allRoomsMemory);
-                    
-                    if (activeDrawerRoomId) {
-                        openDrawer(activeDrawerRoomId);
-                    }
-                })
-                .catch(err => {
-                    document.getElementById('ledgerBody').innerHTML = `<tr><td colspan="8" class="no-data" style="color:#f87171;">Error pulling data ledger stream: ${err.message}</td></tr>`;
-                });
-        }
-
-        function renderTableData(roomsToRender) {
-            const tbody = document.getElementById('ledgerBody');
-            tbody.innerHTML = '';
-
-            if (roomsToRender.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="no-data">No rooms match criteria.</td></tr>`;
-                return;
-            }
-
-            roomsToRender.forEach(room => {
-                let facilitiesHTML = (room.facilities || [])
-                    .filter(f => f.toLowerCase() !== 'none')
-                    .map(f => `<span class="facility-tag">${f}</span>`).join('');
-                if (!facilitiesHTML) facilitiesHTML = '<span style="color:#64748b; font-style:italic; font-size:11px;">None</span>';
-
-                // Count active complaints (where resolved is false)
-                const activeComplaintsCount = room.complaints ? room.complaints.filter(c => !c.resolved).length : 0;
-                
-                // Active badge displaying the count of unresolved issues
-                const actionBadgeHTML = activeComplaintsCount > 0 
-                    ? `<span class="btn-badge" title="${activeComplaintsCount} Active Issues">${activeComplaintsCount}</span>` 
-                    : '';
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><span class="room-id-badge">#${room.id}</span></td>
-                    <td>
-                        <div class="room-no-container">
-                            <strong style="color: #f8fafc; font-size: 15px;">Room ${room.roomNumber}</strong>
-                        </div>
-                    </td>
-                    <td><img src="${room.imageUrl ? room.imageUrl : 'https://via.placeholder.com/75x52/1e2230/cbd5e1?text=No+Img'}" class="thumbnail"></td>
-                    <td>
-                        <div style="font-weight:600; color:#f8fafc;">${room.title}</div>
-                        <div style="font-size:12px; color:#64748b;">📍 ${room.location}</div>
-                    </td>
-                    <td><span style="font-weight:700; color:#f8fafc;">₹${room.pricePerMonth}</span></td>
-                    <td><div class="facilities-container">${facilitiesHTML}</div></td>
-                    <td>
-                        <div class="status-container ${room.available ? 'status-active' : 'status-vacant'}">
-                            <span class="status-dot"></span>
-                            ${room.available ? 'Vacant' : 'Occupied'}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                            <button class="toggle-btn" onclick="toggleStatus(${room.id})">Toggle Status</button>
-                            <button class="manage-btn" onclick="openDrawer(${room.id})">
-                                Complaints
-                                ${actionBadgeHTML}
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        /* DRAWER CONTROLS */
-        function openDrawer(roomId) {
-            const room = allRoomsMemory.find(r => r.id === roomId);
-            if (!room) return;
-
-            activeDrawerRoomId = roomId;
-            document.getElementById('drawerRoomTitle').textContent = `Room ${room.roomNumber} Logs`;
-            
-            const listWrapper = document.getElementById('drawerComplaintsList');
-            listWrapper.innerHTML = '';
-
-            if (room.complaints && room.complaints.length > 0) {
-                room.complaints.forEach(c => {
-                    const item = document.createElement('div');
-                    item.className = `complaint-item ${c.resolved ? 'resolved' : ''}`;
-                    item.innerHTML = `
-                        <div class="complaint-text">
-                            <span style="font-size: 14px; margin-right: 4px;">${c.resolved ? '✅' : '⚠️'}</span>
-                            ${c.description}
-                        </div>
-                        <button class="comp-btn ${c.resolved ? 'reopen' : 'resolve'}" onclick="toggleComplaint(${c.id})">
-                            ${c.resolved ? 'Reopen' : 'Resolve'}
-                        </button>
-                    `;
-                    listWrapper.appendChild(item);
-                });
-            } else {
-                listWrapper.innerHTML = '<div class="no-data" style="padding: 20px 0;">No reported complaints.</div>';
-            }
-
-            document.getElementById('complaintDrawer').classList.add('open');
-            document.getElementById('mainContent').style.marginRight = '350px';
-        }
-
-        function closeDrawer() {
-            activeDrawerRoomId = null;
-            document.getElementById('complaintDrawer').classList.remove('open');
-            document.getElementById('mainContent').style.marginRight = '0px';
-        }
-
-        function submitNewComplaint() {
-            if (!activeDrawerRoomId) return;
-            const input = document.getElementById('newComplaintInput');
-            const desc = input.value.trim();
-            if (!desc) return alert("Please specify the complaint details first.");
-
-            const formData = new FormData();
-            formData.append("description", desc);
-
-            fetch(`/api/rooms/${activeDrawerRoomId}/complaints/add`, { method: 'POST', body: formData })
-                .then(res => { if(!res.ok) throw new Error("Database error saving complaint"); return res.text(); })
-                .then(() => {
-                    input.value = '';
-                    fetchLedger();
-                })
-                .catch(err => alert("Error: " + err.message));
-        }
-
-        function toggleComplaint(complaintId) {
-            fetch(`/api/rooms/complaints/toggle/${complaintId}`, { method: 'PUT' })
-                .then(res => { if(!res.ok) throw new Error("DB refusal"); return res.text(); })
-                .then(() => { fetchLedger(); })
-                .catch(err => alert("Error toggling: " + err.message));
-        }
-
-        // Toggle Room Status
-        function toggleStatus(id) {
-            fetch(`/api/rooms/toggle-availability/${id}`, { method: 'PUT' })
-                .then(res => { if (!res.ok) throw new Error("DB connection dropped"); return res.json(); })
-                .then(() => { fetchLedger(); })
-                .catch(err => alert("Error switching status: " + err.message));
-        }
-
-        function applyFilters() {
-            const searchKeyword = document.getElementById('roomSearchInput').value.trim().toLowerCase();
-            const statusSelection = document.getElementById('roomStatusFilter').value;
-            const targetAmenities = Array.from(document.querySelectorAll('.facility-filter:checked')).map(cb => cb.value.toLowerCase());
-
-            const filteredResults = allRoomsMemory.filter(room => {
-                const matchesSearch = !searchKeyword || (room.roomNumber && room.roomNumber.toLowerCase().includes(searchKeyword));
-                const matchesStatus = statusSelection === 'all' || (statusSelection === 'available' ? room.available : !room.available);
-                const roomFacilitiesLower = (room.facilities || []).map(f => f.toLowerCase());
-                const matchesAmenities = targetAmenities.every(amenity => roomFacilitiesLower.includes(amenity));
-                return matchesSearch && matchesStatus && matchesAmenities;
-            });
-            renderTableData(filteredResults);
-        }
-    </script>
-</body>
-</html>
+    <div class="search-container">
+        <div class="search-box">
+            <div class="search-input-group">
+                <input type="text" id="searchInput" placeholder="🔍 Search city, area, or PG name..." onkeyup="filterRooms()">
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+                <select id="priceFilter" onchange="filterRooms()">
+                    <option value="all">Any Budget</option>
+                    <option value="50
