@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PG Hub - Guest Registry</title>
+    <title>PG Hub - Family Guest Registry</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
@@ -17,69 +17,41 @@
             align-items: center;
         }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
+        .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 30px; }
 
-        header {
-            border-bottom: 1px solid #222738;
-            padding-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        header { border-bottom: 1px solid #222738; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         h1 { color: #f8fafc; font-size: 22px; font-weight: 700; }
-        h1 span { 
-            font-size: 11px; background: #1e2230; color: #94a3b8; 
-            padding: 4px 10px; border-radius: 4px; font-weight: 500; 
-            border: 1px solid #2e354f; margin-left: 10px;
-        }
+        h1 span { font-size: 11px; background: #1e2230; color: #94a3b8; padding: 4px 10px; border-radius: 4px; font-weight: 500; border: 1px solid #2e354f; margin-left: 10px; }
 
-        .back-btn {
-            background-color: #1e2230; border: 1px solid #2e354f; color: #cbd5e1;
-            padding: 8px 14px; border-radius: 6px; text-decoration: none;
-            font-size: 12px; font-weight: 600; transition: all 0.2s;
-        }
+        .back-btn { background-color: #1e2230; border: 1px solid #2e354f; color: #cbd5e1; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600; transition: all 0.2s; }
         .back-btn:hover { background-color: #2a3044; color: #fff; }
 
-        .panel {
-            background: #151821; border: 1px solid #222738;
-            border-radius: 8px; padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        }
+        .panel { background: #151821; border: 1px solid #222738; border-radius: 8px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
 
-        h2 {
-            font-size: 16px; color: #10b981; text-transform: uppercase;
-            letter-spacing: 1px; margin-bottom: 20px; font-weight: 700;
-            border-bottom: 1px solid #222738; padding-bottom: 10px;
-        }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222738; padding-bottom: 10px; margin-bottom: 20px; }
+        h2 { font-size: 16px; color: #10b981; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0; }
+        .capacity-badge { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
 
-        .form-row { display: flex; gap: 15px; margin-bottom: 20px; }
-        .form-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;}
 
         label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        input[type="text"], input[type="number"], input[type="date"], input[type="tel"] {
-            width: 100%; padding: 11px 14px; background: #1e2230;
-            border: 1px solid #2e354f; border-radius: 6px;
-            font-size: 14px; color: #f8fafc; transition: all 0.2s;
-        }
-
+        input { width: 100%; padding: 11px 14px; background: #1e2230; border: 1px solid #2e354f; border-radius: 6px; font-size: 14px; color: #f8fafc; transition: all 0.2s; }
         input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
         input[readonly] { opacity: 0.7; cursor: not-allowed; }
 
-        .btn-primary {
-            width: 100%; padding: 12px; background-color: #10b981;
-            color: white; border: none; border-radius: 6px;
-            font-weight: bold; font-size: 14px; cursor: pointer;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.2s;
-            margin-top: 10px;
-        }
+        /* Guest Block Styling */
+        .guest-block { background: #0d0e12; border: 1px dashed #2e354f; border-radius: 6px; padding: 20px; margin-bottom: 20px; position: relative; }
+        .guest-title { font-size: 13px; font-weight: 700; color: #60a5fa; margin-bottom: 15px; text-transform: uppercase; }
+        
+        .remove-btn { position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .remove-btn:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .btn-add { width: 100%; padding: 12px; background-color: rgba(96, 165, 250, 0.1); color: #60a5fa; border: 1px dashed #60a5fa; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; transition: all 0.2s; margin-bottom: 20px; }
+        .btn-add:hover { background-color: rgba(96, 165, 250, 0.2); }
+
+        .btn-primary { width: 100%; padding: 14px; background-color: #10b981; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.2s; }
         .btn-primary:hover { background-color: #059669; }
     </style>
 </head>
@@ -92,48 +64,36 @@
         </header>
 
         <section class="panel">
-            <h2>Register New Tenant</h2>
+            <div class="panel-header">
+                <h2>Register Family / Group</h2>
+                <div class="capacity-badge" id="capacityBadge">Loading Capacity...</div>
+            </div>
+
             <form id="tenantForm">
-                
-                <div class="form-group" style="margin-bottom: 20px;">
+                <div class="form-group">
                     <label>Assign to Room ID</label>
                     <input type="number" id="roomId" placeholder="e.g., 5" required>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label>Full Legal Name</label>
-                    <input type="text" id="fullName" placeholder="Name as per Government ID" required autocomplete="off">
+                <div id="guestsContainer">
+                    <!-- Guest 1 will always be here -->
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" id="phoneNumber" placeholder="+91..." required>
-                    </div>
-                    <div class="form-group">
-                        <label>Gov ID Number</label>
-                        <input type="text" id="governmentIdNumber" placeholder="ID Number" required autocomplete="off">
-                    </div>
-                </div>
+                <button type="button" id="addGuestBtn" class="btn-add" style="display: none;">+ Add Family Member</button>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Check-In Date</label>
-                        <input type="date" id="checkInDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Expected Check-Out</label>
-                        <input type="date" id="checkOutDate" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-primary">Record Legal Entry</button>
+                <button type="submit" class="btn-primary">Confirm & Book Room</button>
             </form>
         </section>
     </div>
 
     <script>
-        // 1. Auto-fill the Room ID if clicking from the dashboard
+        let roomMaxCapacity = 1;
+        let currentGuestCount = 0;
+
+        const guestsContainer = document.getElementById('guestsContainer');
+        const addGuestBtn = document.getElementById('addGuestBtn');
+
+        // 1. Check URL for Room ID and fetch its capacity
         const urlParams = new URLSearchParams(window.location.search);
         const passedRoomId = urlParams.get('roomId');
 
@@ -141,27 +101,119 @@
             const roomInput = document.getElementById('roomId');
             roomInput.value = passedRoomId;
             roomInput.readOnly = true; 
+
+            // Fetch the room data to find out its maximum capacity
+            fetch('/api/rooms/all')
+                .then(res => res.json())
+                .then(rooms => {
+                    const room = rooms.find(r => r.id == passedRoomId);
+                    if(room) {
+                        roomMaxCapacity = room.capacity || 2; // Default to 2 if missing
+                        document.getElementById('capacityBadge').textContent = `Max Capacity: ${roomMaxCapacity} Guests`;
+                        addGuestBtn.style.display = 'block'; // Show the + button
+                        
+                        // Add the first guest block
+                        appendGuestBlock();
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('capacityBadge').textContent = "Error loading capacity";
+                });
+        } else {
+            // If they didn't come from the dashboard, just let them add 1 person for now
+            document.getElementById('capacityBadge').textContent = "Manual ID Entry";
+            appendGuestBlock();
         }
 
-        // 2. Handle form submission
+        // 2. The function to generate a new guest form block
+        function appendGuestBlock() {
+            if (currentGuestCount >= roomMaxCapacity) {
+                alert(`This room can only accommodate a maximum of ${roomMaxCapacity} guests.`);
+                return;
+            }
+
+            currentGuestCount++;
+            
+            const block = document.createElement('div');
+            block.className = 'guest-block';
+            block.innerHTML = `
+                <div class="guest-title">Guest ${currentGuestCount}</div>
+                ${currentGuestCount > 1 ? `<button type="button" class="remove-btn" onclick="this.parentElement.remove(); currentGuestCount--; checkButtonVisibility();">Remove</button>` : ''}
+                
+                <div class="form-group">
+                    <label>Full Legal Name</label>
+                    <input type="text" class="fullName" placeholder="Name as per Government ID" required autocomplete="off">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" class="phoneNumber" placeholder="+91..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gov ID Number</label>
+                        <input type="text" class="govId" placeholder="ID Number" required autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Check-In Date</label>
+                        <input type="date" class="checkIn" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Expected Check-Out</label>
+                        <input type="date" class="checkOut" required>
+                    </div>
+                </div>
+            `;
+            guestsContainer.appendChild(block);
+            checkButtonVisibility();
+        }
+
+        function checkButtonVisibility() {
+            if (currentGuestCount >= roomMaxCapacity) {
+                addGuestBtn.style.opacity = '0.5';
+                addGuestBtn.style.cursor = 'not-allowed';
+                addGuestBtn.textContent = 'Room at Maximum Capacity';
+            } else {
+                addGuestBtn.style.opacity = '1';
+                addGuestBtn.style.cursor = 'pointer';
+                addGuestBtn.textContent = '+ Add Family Member';
+            }
+        }
+
+        // Add button listener
+        addGuestBtn.addEventListener('click', () => {
+            if (currentGuestCount < roomMaxCapacity) {
+                appendGuestBlock();
+            }
+        });
+
+        // 3. Process the entire family on submit
         document.getElementById('tenantForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
             const roomId = document.getElementById('roomId').value;
             
-            // EXACT MATCH: These keys (left side of the colon) match the Java variables perfectly.
-            const tenantData = {
-                fullName: document.getElementById('fullName').value,
-                phoneNumber: document.getElementById('phoneNumber').value,
-                governmentIdNumber: document.getElementById('governmentIdNumber').value,
-                checkInDate: document.getElementById('checkInDate').value,
-                checkOutDate: document.getElementById('checkOutDate').value
-            };
+            // Collect all guest blocks
+            const familyMembers = [];
+            const blocks = document.querySelectorAll('.guest-block');
+            
+            blocks.forEach(block => {
+                familyMembers.push({
+                    fullName: block.querySelector('.fullName').value,
+                    phoneNumber: block.querySelector('.phoneNumber').value,
+                    governmentIdNumber: block.querySelector('.govId').value,
+                    checkInDate: block.querySelector('.checkIn').value,
+                    checkOutDate: block.querySelector('.checkOut').value
+                });
+            });
 
+            // Send the JSON Array to the Java backend!
             fetch('/api/rooms/' + roomId + '/tenants/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(tenantData)
+                body: JSON.stringify(familyMembers) 
             })
             .then(async response => {
                 if (!response.ok) {

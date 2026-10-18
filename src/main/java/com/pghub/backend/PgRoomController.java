@@ -35,6 +35,7 @@ public class PgRoomController {
                           @RequestParam("title") String title,
                           @RequestParam("location") String location,
                           @RequestParam("pricePerMonth") Double pricePerMonth,
+                          @RequestParam(value = "capacity", defaultValue = "2") Integer capacity,
                           @RequestParam("image") MultipartFile file,
                           @RequestParam(value = "facilities", required = false) List<String> facilities) throws IOException { 
 
@@ -59,6 +60,7 @@ public class PgRoomController {
         List<String> finalFacilities = (facilities == null) ? new java.util.ArrayList<>() : facilities;
         
         PgRoom newRoom = new PgRoom(roomNumber,title, location, pricePerMonth, imageUrlPath, finalFacilities);
+        newRoom.setCapacity(capacity);
         return ResponseEntity.ok(roomRepository.save(newRoom));
 }    
 
@@ -167,25 +169,32 @@ public class PgRoomController {
 private TenantRepository tenantRepository;
 
 @PostMapping("/{id}/tenants/add")
-public ResponseEntity<?> addTenantToRoom(@PathVariable Long id, @RequestBody Tenant tenant) {
+public ResponseEntity<?> addTenantToRoom(@PathVariable Long id, @RequestBody java.util.List<Tenant> familyMembers) {
     return roomRepository.findById(id).map(room -> {
-        
-        // Prevent duplicate IDs from crashing the app
-        if(tenantRepository.existsByGovernmentIdNumber(tenant.getGovernmentIdNumber())) {
-            return ResponseEntity.badRequest().body("A tenant with this Government ID is already registered.");
-        }
+         if (familyMembers.size()   > room.getCapacity()) {
+            return ResponseEntity.badRequest().body("The number of family members exceeds the room's capacity.");}
 
-        // Link the room to the person
+        if (!room.isAvailable()) {
+            return ResponseEntity.badRequest().body("This room is currently not available.This room is already occupied by another family.");
+        }
+        for (Tenant tenant : familyMembers){
+            if(tenantRepository.existsByGovernmentIdNumber(tenant.getGovernmentIdNumber())) {
+            return ResponseEntity.badRequest().body("A tenant with this Government ID is already registered.");
+        } // Link the room to the person
         tenant.setPgRoom(room);
+        tenantRepository.save(tenant);
+        }
+    
+       
         
         // Save the person to the database
         
-        tenantRepository.save(tenant);
+        
 
         room.setAvailable(false);
         roomRepository.save(room);
        
-        return ResponseEntity.ok("Legal tenant record stored successfully.");
+        return ResponseEntity.ok("Family of " + familyMembers.size() + " registered successfully and room marked as Occupied.");
     }).orElse(ResponseEntity.notFound().build());
 }
 

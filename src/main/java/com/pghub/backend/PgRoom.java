@@ -30,6 +30,7 @@ public class PgRoom {
     private String title;
     private String location;
     private Double pricePerMonth;
+    private Integer capacity = 2;
     private String imageUrl;
     private boolean available=true;
 
@@ -83,6 +84,9 @@ public class PgRoom {
 
     public Double getPricePerMonth(){ return pricePerMonth;}
     public void setPricePerMonth( Double pricePerMonth){this.pricePerMonth=pricePerMonth;}
+
+    public Integer getCapacity() {return capacity;}
+    public void setCapacity(Integer capacity) { this.capacity = capacity; }
 
     public String getImageUrl(){ return imageUrl;}
     public void setImageUrl( String imageUrl){ this.imageUrl=imageUrl;}
