@@ -179,8 +179,12 @@ public ResponseEntity<?> addTenantToRoom(@PathVariable Long id, @RequestBody Ten
         tenant.setPgRoom(room);
         
         // Save the person to the database
-        tenantRepository.save(tenant);
         
+        tenantRepository.save(tenant);
+
+        room.setAvailable(false);
+        roomRepository.save(room);
+       
         return ResponseEntity.ok("Legal tenant record stored successfully.");
     }).orElse(ResponseEntity.notFound().build());
 }

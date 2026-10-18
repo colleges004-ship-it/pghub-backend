@@ -234,7 +234,8 @@
     <div class="container">
         <header>
             <h1>Asset Operations Console<span>Root Terminal</span></h1>
-            <a href="/rooms.html" class="back-btn">← Back to Ledger</a>
+            <!-- UPDATED: Points to dashboard.html -->
+            <a href="/dashboard.html" class="back-btn">← Back to Ledger</a>
         </header>
 
         <!-- PANEL 1: REGISTER NEW ROOM -->
@@ -351,7 +352,8 @@
         })
         .then(data => {
             alert("🎉 Room Added Successfully! Redirecting to inventory ledger...");
-            window.location.href = '/rooms.html'; 
+            // UPDATED: Redirects to dashboard.html
+            window.location.href = '/dashboard.html'; 
         })
         .catch(err => {
             alert(err.message);

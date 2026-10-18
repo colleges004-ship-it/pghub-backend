@@ -28,7 +28,9 @@
 
         /* Main Workspace Area */
         .main-content { margin-left: 310px; flex-grow: 1; padding: 40px; background-color: #0d0e12; transition: margin-right 0.3s ease; }
-        header { margin-bottom: 30px; border-bottom: 1px solid #222738; padding-bottom: 20px; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #222738; padding-bottom: 20px; }
+        
         h1 { color: #f8fafc; font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
         h1 span { font-size: 12px; background: #1e2230; color: #94a3b8; padding: 4px 10px; border-radius: 4px; font-weight: 500; border: 1px solid #2e354f; }
 
@@ -72,11 +74,9 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        /* Facilities tags */
         .facilities-container { display: flex; flex-wrap: wrap; gap: 6px; max-width: 220px; }
         .facility-tag { background: #1e2230; color: #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px; border: 1px solid #2e354f; }
 
-        /* Availability statuses */
         .status-container { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         .status-active { color: #34d399; }
@@ -84,7 +84,7 @@
         .status-vacant { color: #f87171; }
         .status-vacant .status-dot { background-color: #f87171; box-shadow: 0 0 8px #f87171; }
 
-        .btn-group { display: flex; gap: 8px; justify-content: flex-end; }
+        .btn-group { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;}
         .toggle-btn { background-color: #1e2230; border: 1px solid #2e354f; color: #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s; }
         .toggle-btn:hover { background-color: #2a3044; }
         
@@ -102,7 +102,7 @@
         }
         .manage-btn:hover { background-color: rgba(99, 102, 241, 0.2); }
 
-        /* SIDE PANEL / DRAWER FOR COMPLAINTS */
+        /* SIDE PANEL / DRAWER COMPONENTS */
         .drawer { position: fixed; right: -350px; top: 0; width: 350px; height: 100vh; background: #151821; border-left: 1px solid #222738; box-shadow: -5px 0 25px rgba(0,0,0,0.5); transition: right 0.3s ease; z-index: 100; padding: 30px 24px; display: flex; flex-direction: column; }
         .drawer.open { right: 0; }
         .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222738; padding-bottom: 15px; margin-bottom: 20px; }
@@ -110,18 +110,27 @@
         .close-drawer { background: none; border: none; color: #64748b; font-size: 24px; cursor: pointer; }
         .close-drawer:hover { color: #f8fafc; }
 
-        .complaint-list-wrapper { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .complaint-item { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #1e2230; border-radius: 6px; border-left: 3px solid #ef4444; border: 1px solid #2e354f; border-left-width: 4px; }
+        .list-wrapper { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
+        
+        /* Shared list item styles */
+        .list-item { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #1e2230; border-radius: 6px; border: 1px solid #2e354f; border-left-width: 4px; }
+        .complaint-item { border-left-color: #ef4444; }
         .complaint-item.resolved { border-left-color: #10b981; opacity: 0.65; }
+        
+        /* Guest item styling */
+        .guest-item { border-left-color: #3b82f6; }
+        .guest-name { font-weight: bold; color: #f8fafc; font-size: 15px; }
+        .guest-detail { font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 5px;}
+
         .complaint-text { font-size: 13px; color: #f8fafc; word-break: break-word; }
         .comp-btn { align-self: flex-end; padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .comp-btn.resolve { background: #10b981; color: #fff; }
         .comp-btn.reopen { background: #f59e0b; color: #fff; }
 
-        .add-complaint-box { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #222738; padding-top: 20px; }
-        .add-complaint-box input { width: 100%; padding: 11px 14px; background: #1e2230; border: 1px solid #2e354f; color: #fff; border-radius: 6px; font-size: 14px; }
-        .add-complaint-box button { background: #6366f1; color: white; border: none; padding: 11px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
-        .add-complaint-box button:hover { background-color: #4f46e5; }
+        .add-box { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #222738; padding-top: 20px; }
+        .add-box input { width: 100%; padding: 11px 14px; background: #1e2230; border: 1px solid #2e354f; color: #fff; border-radius: 6px; font-size: 14px; }
+        .add-box button { background: #6366f1; color: white; border: none; padding: 11px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .add-box button:hover { background-color: #4f46e5; }
 
         .no-data { text-align: center; padding: 40px; color: #64748b; font-style: italic; }
     </style>
@@ -155,8 +164,14 @@
     </aside>
 
     <main class="main-content" id="mainContent">
+        
         <header>
             <h1>Property Registry <span>Owner Operations Terminal</span></h1>
+            <form action="/perform_logout" method="POST">
+                <button type="submit" class="manage-btn" style="background-color: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #f87171; padding: 10px 16px; font-size: 14px;">
+                    🚪 Log Out
+                </button>
+            </form>
         </header>
 
         <div class="ledger-wrapper">
@@ -170,7 +185,7 @@
                         <th>Monthly Rent</th>
                         <th>Amenities</th>
                         <th>Availability</th>
-                        <th style="text-align: right; width: 250px;">Actions</th>
+                        <th style="text-align: right; width: 330px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="ledgerBody">
@@ -182,19 +197,33 @@
         </div>
     </main>
 
-    <!-- SLIDE OUT DRAWER COMPONENT FOR LOGS -->
+    <!-- DRAWER 1: COMPLAINTS -->
     <div id="complaintDrawer" class="drawer">
         <div class="drawer-header">
             <div class="drawer-title" id="drawerRoomTitle">Room Log</div>
-            <button class="close-drawer" onclick="closeDrawer()">&times;</button>
+            <button class="close-drawer" onclick="closeDrawer('complaintDrawer')">&times;</button>
         </div>
-        <div class="complaint-list-wrapper" id="drawerComplaintsList">
+        <div class="list-wrapper" id="drawerComplaintsList">
             <!-- Populated via JS -->
         </div>
-        <div class="add-complaint-box">
+        <div class="add-box">
             <span class="control-label">File New Complaint</span>
             <input type="text" id="newComplaintInput" placeholder="Write down utility error...">
             <button onclick="submitNewComplaint()">Log Incident</button>
+        </div>
+    </div>
+
+    <!-- DRAWER 2: GUEST REGISTRY (NEW) -->
+    <div id="tenantDrawer" class="drawer">
+        <div class="drawer-header">
+            <div class="drawer-title" id="drawerTenantTitle">Guest Registry</div>
+            <button class="close-drawer" onclick="closeDrawer('tenantDrawer')">&times;</button>
+        </div>
+        <div class="list-wrapper" id="drawerTenantList">
+            <!-- Populated via JS -->
+        </div>
+        <div class="add-box" style="border-top: none; padding-top: 0;">
+            <button onclick="redirectToAddTenant()" style="background-color: #10b981;">+ Register New Legal Guest</button>
         </div>
     </div>
 
@@ -211,8 +240,12 @@
                     allRoomsMemory = rooms;
                     renderTableData(allRoomsMemory);
                     
-                    if (activeDrawerRoomId) {
-                        openDrawer(activeDrawerRoomId);
+                    // Keep drawers updated if they are open
+                    if (document.getElementById('complaintDrawer').classList.contains('open')) {
+                        openComplaintDrawer(activeDrawerRoomId);
+                    }
+                    if (document.getElementById('tenantDrawer').classList.contains('open')) {
+                        openTenantDrawer(activeDrawerRoomId);
                     }
                 })
                 .catch(err => {
@@ -235,15 +268,16 @@
                     .map(f => `<span class="facility-tag">${f}</span>`).join('');
                 if (!facilitiesHTML) facilitiesHTML = '<span style="color:#64748b; font-style:italic; font-size:11px;">None</span>';
 
-                // Count active complaints (where resolved is false)
                 const activeComplaintsCount = room.complaints ? room.complaints.filter(c => !c.resolved).length : 0;
-                
-                // Active badge displaying the count of unresolved issues
                 const actionBadgeHTML = activeComplaintsCount > 0 
                     ? `<span class="btn-badge" title="${activeComplaintsCount} Active Issues">${activeComplaintsCount}</span>` 
                     : '';
 
+                // NEW: Count the tenants
+                const tenantCount = room.tenants ? room.tenants.length : 0;
+
                 const tr = document.createElement('tr');
+                
                 tr.innerHTML = `
                     <td><span class="room-id-badge">#${room.id}</span></td>
                     <td>
@@ -267,7 +301,14 @@
                     <td>
                         <div class="btn-group">
                             <button class="toggle-btn" onclick="toggleStatus(${room.id})">Toggle Status</button>
-                            <button class="manage-btn" onclick="openDrawer(${room.id})">
+                            
+                            <!-- NEW BUTTON: View Guests -->
+                            <button class="manage-btn" style="color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background-color: rgba(96, 165, 250, 0.1);" 
+                                    onclick="openTenantDrawer(${room.id})">
+                                👥 Guests (${tenantCount})
+                            </button>
+
+                            <button class="manage-btn" onclick="openComplaintDrawer(${room.id})">
                                 Complaints
                                 ${actionBadgeHTML}
                             </button>
@@ -278,8 +319,17 @@
             });
         }
 
-        /* DRAWER CONTROLS */
-        function openDrawer(roomId) {
+        /* ----- DRAWER CONTROLS ----- */
+        
+        function closeDrawer(drawerId) {
+            activeDrawerRoomId = null;
+            document.getElementById(drawerId).classList.remove('open');
+            document.getElementById('mainContent').style.marginRight = '0px';
+        }
+
+        // COMPLAINTS DRAWER
+        function openComplaintDrawer(roomId) {
+            closeDrawer('tenantDrawer'); // Close the other drawer if open
             const room = allRoomsMemory.find(r => r.id === roomId);
             if (!room) return;
 
@@ -292,7 +342,7 @@
             if (room.complaints && room.complaints.length > 0) {
                 room.complaints.forEach(c => {
                     const item = document.createElement('div');
-                    item.className = `complaint-item ${c.resolved ? 'resolved' : ''}`;
+                    item.className = `list-item complaint-item ${c.resolved ? 'resolved' : ''}`;
                     item.innerHTML = `
                         <div class="complaint-text">
                             <span style="font-size: 14px; margin-right: 4px;">${c.resolved ? '✅' : '⚠️'}</span>
@@ -312,11 +362,47 @@
             document.getElementById('mainContent').style.marginRight = '350px';
         }
 
-        function closeDrawer() {
-            activeDrawerRoomId = null;
-            document.getElementById('complaintDrawer').classList.remove('open');
-            document.getElementById('mainContent').style.marginRight = '0px';
+        // TENANT DRAWER (NEW)
+        function openTenantDrawer(roomId) {
+            closeDrawer('complaintDrawer'); // Close the other drawer if open
+            const room = allRoomsMemory.find(r => r.id === roomId);
+            if (!room) return;
+
+            activeDrawerRoomId = roomId;
+            document.getElementById('drawerTenantTitle').textContent = `Room ${room.roomNumber} Legal Registry`;
+            
+            const listWrapper = document.getElementById('drawerTenantList');
+            listWrapper.innerHTML = '';
+
+            if (room.tenants && room.tenants.length > 0) {
+                room.tenants.forEach(t => {
+                    const item = document.createElement('div');
+                    item.className = 'list-item guest-item';
+                    item.innerHTML = `
+                        <div class="guest-name">${t.fullName}</div>
+                        <div class="guest-detail">📞 ${t.phoneNumber}</div>
+                        <div class="guest-detail">🆔 Gov ID: <span style="color:#e2e8f0;">${t.governmentIdNumber}</span></div>
+                        <div class="guest-detail" style="margin-top:4px; padding-top:8px; border-top:1px dashed #2e354f;">
+                            📅 <b>In:</b> ${t.checkInDate} &nbsp;|&nbsp; <b>Out:</b> ${t.checkOutDate}
+                        </div>
+                    `;
+                    listWrapper.appendChild(item);
+                });
+            } else {
+                listWrapper.innerHTML = '<div class="no-data" style="padding: 20px 0;">Room is entirely vacant.<br>No guests on file.</div>';
+            }
+
+            document.getElementById('tenantDrawer').classList.add('open');
+            document.getElementById('mainContent').style.marginRight = '350px';
         }
+
+        function redirectToAddTenant() {
+            if (activeDrawerRoomId) {
+                window.location.href = `/register-tenant.html?roomId=${activeDrawerRoomId}`;
+            }
+        }
+
+        /* ----- ACTIONS ----- */
 
         function submitNewComplaint() {
             if (!activeDrawerRoomId) return;
@@ -343,7 +429,6 @@
                 .catch(err => alert("Error toggling: " + err.message));
         }
 
-        // Toggle Room Status
         function toggleStatus(id) {
             fetch(`/api/rooms/toggle-availability/${id}`, { method: 'PUT' })
                 .then(res => { if (!res.ok) throw new Error("DB connection dropped"); return res.json(); })

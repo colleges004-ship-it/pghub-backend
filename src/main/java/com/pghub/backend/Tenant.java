@@ -3,6 +3,7 @@ package com.pghub.backend;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name="tenants")
@@ -21,10 +22,12 @@ public class Tenant {
     @Column(nullable = false, unique = true)
     private String governmentIdNumber; // e.g., Aadhaar or Passport
 
-    @Column(nullable = false)
+   @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate checkInDate;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate checkOutDate;
 
     // Link this tenant to a specific PG Room
