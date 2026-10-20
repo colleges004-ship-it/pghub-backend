@@ -85,15 +85,13 @@
             </form>
         </section>
     </div>
-
-    <script>
+<script>
         let roomMaxCapacity = 1;
         let currentGuestCount = 0;
 
         const guestsContainer = document.getElementById('guestsContainer');
         const addGuestBtn = document.getElementById('addGuestBtn');
 
-        // 1. Check URL for Room ID and fetch its capacity
         const urlParams = new URLSearchParams(window.location.search);
         const passedRoomId = urlParams.get('roomId');
 
@@ -102,17 +100,14 @@
             roomInput.value = passedRoomId;
             roomInput.readOnly = true; 
 
-            // Fetch the room data to find out its maximum capacity
             fetch('/api/rooms/all')
                 .then(res => res.json())
                 .then(rooms => {
                     const room = rooms.find(r => r.id == passedRoomId);
                     if(room) {
-                        roomMaxCapacity = room.capacity || 2; // Default to 2 if missing
+                        roomMaxCapacity = room.capacity || 2; 
                         document.getElementById('capacityBadge').textContent = `Max Capacity: ${roomMaxCapacity} Guests`;
-                        addGuestBtn.style.display = 'block'; // Show the + button
-                        
-                        // Add the first guest block
+                        addGuestBtn.style.display = 'block'; 
                         appendGuestBlock();
                     }
                 })
@@ -120,12 +115,10 @@
                     document.getElementById('capacityBadge').textContent = "Error loading capacity";
                 });
         } else {
-            // If they didn't come from the dashboard, just let them add 1 person for now
             document.getElementById('capacityBadge').textContent = "Manual ID Entry";
             appendGuestBlock();
         }
 
-        // 2. The function to generate a new guest form block
         function appendGuestBlock() {
             if (currentGuestCount >= roomMaxCapacity) {
                 alert(`This room can only accommodate a maximum of ${roomMaxCapacity} guests.`);
@@ -133,12 +126,14 @@
             }
 
             currentGuestCount++;
+            const isPrimary = currentGuestCount === 1;
             
             const block = document.createElement('div');
             block.className = 'guest-block';
+            
             block.innerHTML = `
-                <div class="guest-title">Guest ${currentGuestCount}</div>
-                ${currentGuestCount > 1 ? `<button type="button" class="remove-btn" onclick="this.parentElement.remove(); currentGuestCount--; checkButtonVisibility();">Remove</button>` : ''}
+                <div class="guest-title">${isPrimary ? 'Guest 1 (Primary Contact)' : 'Guest ' + currentGuestCount + ' (Dependent)'}</div>
+                ${!isPrimary ? `<button type="button" class="remove-btn" onclick="this.parentElement.remove(); currentGuestCount--; checkButtonVisibility();">Remove</button>` : ''}
                 
                 <div class="form-group">
                     <label>Full Legal Name</label>
@@ -147,8 +142,8 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" class="phoneNumber" placeholder="+91..." required>
+                        <label>Phone Number ${!isPrimary ? '<span style="color:#64748b; text-transform:none;">(Optional)</span>' : ''}</label>
+                        <input type="tel" class="phoneNumber" placeholder="+91..." ${isPrimary ? 'required' : ''}>
                     </div>
                     <div class="form-group">
                         <label>Gov ID Number</label>
@@ -156,6 +151,13 @@
                     </div>
                 </div>
 
+                <!-- 👇 NEW: ID Proof Image Upload 👇 -->
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Upload Gov ID Photo</label>
+                    <input type="file" class="idImage" accept="image/*" style="padding: 8px;">
+                </div>
+
+                ${isPrimary ? `
                 <div class="form-row">
                     <div class="form-group">
                         <label>Check-In Date</label>
@@ -165,7 +167,7 @@
                         <label>Expected Check-Out</label>
                         <input type="date" class="checkOut" required>
                     </div>
-                </div>
+                </div>` : ''} 
             `;
             guestsContainer.appendChild(block);
             checkButtonVisibility();
@@ -183,37 +185,51 @@
             }
         }
 
-        // Add button listener
         addGuestBtn.addEventListener('click', () => {
             if (currentGuestCount < roomMaxCapacity) {
                 appendGuestBlock();
             }
         });
 
-        // 3. Process the entire family on submit
         document.getElementById('tenantForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const roomId = document.getElementById('roomId').value;
             
-            // Collect all guest blocks
             const familyMembers = [];
             const blocks = document.querySelectorAll('.guest-block');
             
+            const primaryCheckIn = blocks[0].querySelector('.checkIn').value;
+            const primaryCheckOut = blocks[0].querySelector('.checkOut').value;
+            
+            // We must use FormData to send files alongside text
+            const formData = new FormData();
+
             blocks.forEach(block => {
                 familyMembers.push({
                     fullName: block.querySelector('.fullName').value,
-                    phoneNumber: block.querySelector('.phoneNumber').value,
+                    phoneNumber: block.querySelector('.phoneNumber').value || "", 
                     governmentIdNumber: block.querySelector('.govId').value,
-                    checkInDate: block.querySelector('.checkIn').value,
-                    checkOutDate: block.querySelector('.checkOut').value
+                    checkInDate: primaryCheckIn,
+                    checkOutDate: primaryCheckOut
                 });
+
+                // Attach the physical image file for this specific guest
+                const fileInput = block.querySelector('.idImage');
+                if (fileInput.files.length > 0) {
+                    formData.append('idFiles', fileInput.files[0]);
+                } else {
+                    // Send a dummy empty file so the backend array size still matches the guest count
+                    formData.append('idFiles', new Blob([], { type: 'application/octet-stream' }), "");
+                }
             });
 
-            // Send the JSON Array to the Java backend!
+            // Package the JSON string of family details
+            formData.append('familyData', JSON.stringify(familyMembers));
+
             fetch('/api/rooms/' + roomId + '/tenants/add', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(familyMembers) 
+                // Notice we removed the 'Content-Type' header! The browser automatically sets it for FormData
+                body: formData 
             })
             .then(async response => {
                 if (!response.ok) {

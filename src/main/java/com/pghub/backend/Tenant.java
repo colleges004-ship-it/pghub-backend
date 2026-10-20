@@ -22,6 +22,9 @@ public class Tenant {
     @Column(nullable = false, unique = true)
     private String governmentIdNumber; // e.g., Aadhaar or Passport
 
+    @Column(nullable = true)
+    private String idProofImageUrl;
+
    @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate checkInDate;
@@ -59,6 +62,10 @@ public class Tenant {
 
     public String getGovernmentIdNumber() { return governmentIdNumber; }
     public void setGovernmentIdNumber(String governmentIdNumber) { this.governmentIdNumber = governmentIdNumber; }
+
+    public String getIdProofImageUrl() {return idProofImageUrl;}
+
+    public void setIdProofImageUrl(String idProofImageUrl) {this.idProofImageUrl = idProofImageUrl;}
 
     public LocalDate getCheckInDate() { return checkInDate; }
     public void setCheckInDate(LocalDate checkInDate) { this.checkInDate = checkInDate; }

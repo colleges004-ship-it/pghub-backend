@@ -253,6 +253,38 @@
                 });
         }
 
+        function uploadIdPhotoLater(tenantId, inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // Change cursor to show it's working
+            document.body.style.cursor = 'wait';
+
+            fetch(`/api/rooms/tenants/${tenantId}/upload-id`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(async response => {
+                if (!response.ok) {
+                    const errMsg = await response.text();
+                    throw new Error(errMsg);
+                }
+                return response.text();
+            })
+            .then(msg => {
+                alert("✅ " + msg);
+                // Refresh the memory and drawer to instantly show the new "View ID" button
+                fetchRooms(); 
+            })
+            .catch(err => alert("Error: " + err.message))
+            .finally(() => {
+                document.body.style.cursor = 'default';
+            });
+        }
+
         function renderTableData(roomsToRender) {
             const tbody = document.getElementById('ledgerBody');
             tbody.innerHTML = '';
@@ -273,8 +305,10 @@
                     ? `<span class="btn-badge" title="${activeComplaintsCount} Active Issues">${activeComplaintsCount}</span>` 
                     : '';
 
-                // NEW: Count the tenants
                 const tenantCount = room.tenants ? room.tenants.length : 0;
+                
+                // Fallback to 2 if capacity is missing from older test data
+                const maxCap = room.capacity ? room.capacity : 2; 
 
                 const tr = document.createElement('tr');
                 
@@ -288,7 +322,11 @@
                     <td><img src="${room.imageUrl ? room.imageUrl : 'https://via.placeholder.com/75x52/1e2230/cbd5e1?text=No+Img'}" class="thumbnail"></td>
                     <td>
                         <div style="font-weight:600; color:#f8fafc;">${room.title}</div>
-                        <div style="font-size:12px; color:#64748b;">📍 ${room.location}</div>
+                        <div style="font-size:12px; color:#64748b; margin-bottom: 6px;">📍 ${room.location}</div>
+                        <!-- 👇 NEW: Max Capacity Badge added here! 👇 -->
+                        <div style="font-size:11px; color:#60a5fa; font-weight:700; background:rgba(96,165,250,0.1); display:inline-block; padding:3px 6px; border-radius:4px; border:1px solid rgba(96,165,250,0.3);">
+                            👨‍👩‍👧‍👦 Capacity: ${maxCap}
+                        </div>
                     </td>
                     <td><span style="font-weight:700; color:#f8fafc;">₹${room.pricePerMonth}</span></td>
                     <td><div class="facilities-container">${facilitiesHTML}</div></td>
@@ -302,10 +340,9 @@
                         <div class="btn-group">
                             <button class="toggle-btn" onclick="toggleStatus(${room.id})">Toggle Status</button>
                             
-                            <!-- NEW BUTTON: View Guests -->
                             <button class="manage-btn" style="color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background-color: rgba(96, 165, 250, 0.1);" 
                                     onclick="openTenantDrawer(${room.id})">
-                                👥 Guests (${tenantCount})
+                                👥 Guests (${tenantCount}/${maxCap})
                             </button>
 
                             <button class="manage-btn" onclick="openComplaintDrawer(${room.id})">
@@ -363,8 +400,8 @@
         }
 
         // TENANT DRAWER (NEW)
-        function openTenantDrawer(roomId) {
-            closeDrawer('complaintDrawer'); // Close the other drawer if open
+       function openTenantDrawer(roomId) {
+            closeDrawer('complaintDrawer'); 
             const room = allRoomsMemory.find(r => r.id === roomId);
             if (!room) return;
 
@@ -375,19 +412,56 @@
             listWrapper.innerHTML = '';
 
             if (room.tenants && room.tenants.length > 0) {
-                room.tenants.forEach(t => {
-                    const item = document.createElement('div');
-                    item.className = 'list-item guest-item';
-                    item.innerHTML = `
-                        <div class="guest-name">${t.fullName}</div>
-                        <div class="guest-detail">📞 ${t.phoneNumber}</div>
-                        <div class="guest-detail">🆔 Gov ID: <span style="color:#e2e8f0;">${t.governmentIdNumber}</span></div>
-                        <div class="guest-detail" style="margin-top:4px; padding-top:8px; border-top:1px dashed #2e354f;">
-                            📅 <b>In:</b> ${t.checkInDate} &nbsp;|&nbsp; <b>Out:</b> ${t.checkOutDate}
+                // 1. Create a single master box for the entire family
+                const familyBox = document.createElement('div');
+                familyBox.style.background = '#1e2230';
+                familyBox.style.padding = '15px';
+                familyBox.style.borderRadius = '8px';
+                familyBox.style.border = '1px solid #334155';
+                
+                // 2. Grab the shared dates from Guest 1 to put at the top of the box
+                const sharedCheckIn = room.tenants[0].checkInDate;
+                const sharedCheckOut = room.tenants[0].checkOutDate;
+                
+                let familyHTML = `
+                    <div style="font-weight:700; color:#f8fafc; font-size:16px; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:10px;">
+                        👪 Family Booking (${room.tenants.length} Guests)
+                        <div style="font-size:13px; color:#60a5fa; margin-top:6px; font-weight:normal;">
+                            📅 Stay: ${sharedCheckIn} to ${sharedCheckOut}
+                        </div>
+                    </div>
+                `;
+
+                // 3. Loop through the tenants and add them inside the same box
+                // Inside your room.tenants.forEach loop:
+                room.tenants.forEach((t, index) => {
+                    const idPhotoBadge = t.idProofImageUrl 
+                        ? `<a href="${t.idProofImageUrl}" target="_blank" style="display:inline-block; margin-top:4px; padding:2px 8px; background:rgba(96,165,250,0.1); color:#60a5fa; border:1px solid rgba(96,165,250,0.3); border-radius:4px; text-decoration:none; font-size:11px; font-weight:600;">🖼️ View ID</a>`
+                        : `
+                        <div style="margin-top:4px; display:inline-block;">
+                            <span style="font-size:11px; color:#64748b; font-style:italic; margin-right: 8px;">No Photo</span>
+                            <label style="cursor:pointer; padding:2px 8px; background:rgba(234,179,8,0.1); color:#eab308; border:1px solid rgba(234,179,8,0.3); border-radius:4px; font-size:11px; font-weight:600;">
+                                📸 Upload Now
+                                <input type="file" style="display:none;" accept="image/*" onchange="uploadIdPhotoLater(${t.id}, this)">
+                            </label>
+                        </div>
+                        `;
+
+                    familyHTML += `
+                        <div style="margin-bottom: ${index === room.tenants.length - 1 ? '0' : '12px'}; padding-bottom: ${index === room.tenants.length - 1 ? '0' : '12px'}; border-bottom: ${index === room.tenants.length - 1 ? 'none' : '1px dashed #2e354f'};">
+                            <div style="font-weight:600; color:#e2e8f0; font-size:14px;">
+                                ${index === 0 ? '👑 Guest 1 (Primary):' : '👤 Guest ' + (index + 1) + ':'} ${t.fullName}
+                            </div>
+                            <div style="font-size:12px; color:#94a3b8; margin-top:4px;">
+                                📞 ${t.phoneNumber ? t.phoneNumber : '<i>No phone</i>'} &nbsp;|&nbsp; 🪪 Gov ID: <span style="color:#cbd5e1;">${t.governmentIdNumber}</span>
+                            </div>
+                            ${idPhotoBadge}
                         </div>
                     `;
-                    listWrapper.appendChild(item);
-                });
+                });;
+
+                familyBox.innerHTML = familyHTML;
+                listWrapper.appendChild(familyBox);
             } else {
                 listWrapper.innerHTML = '<div class="no-data" style="padding: 20px 0;">Room is entirely vacant.<br>No guests on file.</div>';
             }
@@ -395,7 +469,6 @@
             document.getElementById('tenantDrawer').classList.add('open');
             document.getElementById('mainContent').style.marginRight = '350px';
         }
-
         function redirectToAddTenant() {
             if (activeDrawerRoomId) {
                 window.location.href = `/register-tenant.html?roomId=${activeDrawerRoomId}`;
