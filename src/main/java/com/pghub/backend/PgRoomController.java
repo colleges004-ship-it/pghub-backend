@@ -161,10 +161,23 @@ public class PgRoomController {
                 if (familyMembers.size() > room.getCapacity()) {
                     return ResponseEntity.badRequest().body("The number of family members exceeds the room's capacity.");
                 }
-                
-                if (!room.isAvailable()) {
-                    return ResponseEntity.badRequest().body("This room is already occupied by another family.");
+                java.time.LocalDate newCheckIn= familyMembers.get(0).getCheckInDate();
+                java.time.LocalDate newCheckOut= familyMembers.get(0).getCheckOutDate();
+
+                if (room.getTenants() !=null){
+                    for (Tenant existingTenant : room.getTenants()){
+                        java.time.LocalDate existIn = existingTenant.getCheckInDate();
+                        java.time.LocalDate existOut = existingTenant.getCheckOutDate();
+
+                        // Check for overlapping dates
+                        if ((newCheckIn.isBefore(existOut) && newCheckOut.isAfter(existIn)) ||
+                            (newCheckIn.isEqual(existIn) || newCheckOut.isEqual(existOut))) {
+                            return ResponseEntity.badRequest().body("The check-in and check-out dates overlap with an existing tenant's stay.");
+                        }
+                    }
                 }
+
+                
 
                 for (int i = 0; i < familyMembers.size(); i++) {
                     Tenant tenant = familyMembers.get(i);
@@ -192,9 +205,13 @@ public class PgRoomController {
                     tenantRepository.save(tenant);
                 }
                 
-                room.setAvailable(false);
-                roomRepository.save(room);
-                
+                java.time.LocalDate today= java.time.LocalDate.now();
+                if(!newCheckIn.isAfter(today)&& !newCheckOut.isBefore(today)) {
+                    room.setAvailable(false);
+                    roomRepository.save(room);
+                }
+
+
                 return ResponseEntity.ok("Family of " + familyMembers.size() + " registered successfully.");
 
             } catch (Exception e) {
