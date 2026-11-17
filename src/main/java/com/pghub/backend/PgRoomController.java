@@ -75,6 +75,10 @@ public class PgRoomController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
         return roomRepository.findById(id).map(room -> {
+
+            if(room.getTenants() != null && !room.getTenants().isEmpty()) {
+                return ResponseEntity.badRequest().body("Cannot delete room with tenants history.");
+            }
             try {
                 String imageUrl = room.getImageUrl();
                 if (imageUrl != null && imageUrl.startsWith("/uploads")) {
@@ -168,8 +172,20 @@ public class PgRoomController {
                     for (Tenant existingTenant : room.getTenants()){
                         java.time.LocalDate existIn = existingTenant.getCheckInDate();
                         java.time.LocalDate existOut = existingTenant.getCheckOutDate();
+                        java.time.LocalDate today = java.time.LocalDate.now();
+                        
+                        if (newCheckIn.isBefore(today)){
+                            return ResponseEntity.badRequest().body("Check-in date cannot be in the past.");
+                        }
 
+                        if (!newCheckOut.isAfter(newCheckIn)){
+                            return ResponseEntity.badRequest().body("Check-out date cannot be before check-in date.");
+                        }
                         // Check for overlapping dates
+
+                       
+
+                        
                         if ((newCheckIn.isBefore(existOut) && newCheckOut.isAfter(existIn)) ||
                             (newCheckIn.isEqual(existIn) || newCheckOut.isEqual(existOut))) {
                             return ResponseEntity.badRequest().body("The check-in and check-out dates overlap with an existing tenant's stay.");

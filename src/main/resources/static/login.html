@@ -3,135 +3,531 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PG Hub - Terminal Login</title>
+    <title>Sign In — Property Operations Hub</title>
+    <!-- Modern Human Typography: Plus Jakarta Sans & DM Sans (Identical to Dashboard) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        body { 
-            background-color: #0d0e12; 
-            color: #e2e8f0; 
-            min-height: 100vh; 
+        :root {
+            /* Warm, minimal white canvas matching dashboard design system */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-subtle: #f8fafc;
+            --bg-hover: #f1f5f9;
+
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --border-hover: #cbd5e1;
+
+            --text-main: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+
+            /* Natural Accents */
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-soft: #eff6ff;
+            --primary-border: #bfdbfe;
+
+            --green: #10b981;
+            --green-dark: #059669;
+            --green-soft: #ecfdf5;
+            --green-border: #a7f3d0;
+
+            --red: #ef4444;
+            --red-dark: #dc2626;
+            --red-soft: #fef2f2;
+            --red-border: #fecaca;
+
+            /* Soft Layered Shadows & Physical Depth */
+            --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.03);
+            --shadow-float: 0 20px 35px -5px rgba(15, 23, 42, 0.1), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
+
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-pill: 9999px;
+
+            --font-head: 'Plus Jakarta Sans', sans-serif;
+            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.04) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.03) 0px, transparent 50%);
+            color: var(--text-body);
+            font-family: var(--font-body);
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 24px;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
 
-        .login-panel {
-            background: #151821;
-            border: 1px solid #222738;
-            border-radius: 8px;
-            padding: 40px;
+        /* ----------------------------------------------------
+           LOGIN CARD CONTAINER WITH LAYERED DEPTH
+           ---------------------------------------------------- */
+        .login-wrapper {
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeInCard 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        header { text-align: center; margin-bottom: 30px; }
-        h1 { font-size: 20px; color: #f8fafc; font-weight: 700; margin-bottom: 5px; }
-        p { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 12px 14px;
-            background: #1e2230;
-            border: 1px solid #2e354f;
-            border-radius: 6px;
-            font-size: 14px;
-            color: #f8fafc;
-            transition: all 0.2s;
+        @keyframes fadeInCard {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.99);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        input[type="text"]:focus, input[type="password"]:focus {
-            outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        .login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 32px 32px;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #6366f1;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-            transition: all 0.2s;
+        /* Subtle top accent line */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+        }
+
+        /* ----------------------------------------------------
+           HEADER & BRAND CLUSTER
+           ---------------------------------------------------- */
+        .card-header {
+            text-align: center;
+            margin-bottom: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand-emblem {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: #ffffff;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card-title {
+            font-family: var(--font-head);
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.025em;
+            line-height: 1.25;
+            margin-bottom: 6px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Security status badge */
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            background: var(--bg-hover);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-pill);
+            font-size: 11px;
+            font-weight: 600;
             margin-top: 10px;
+            letter-spacing: 0.02em;
         }
 
-        button:hover { background-color: #4f46e5; }
+        .security-badge .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+        }
 
+        /* ----------------------------------------------------
+           ALERT / ERROR BANNER
+           ---------------------------------------------------- */
         .error-message {
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            padding: 10px;
-            border-radius: 6px;
+            background-color: var(--red-soft);
+            border: 1px solid var(--red-border);
+            color: var(--red-dark);
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
             font-size: 13px;
-            margin-bottom: 20px;
-            text-align: center;
+            font-weight: 500;
+            margin-bottom: 22px;
             display: none;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 1px 2px rgba(239, 68, 68, 0.06);
+            animation: shakeError 0.3s ease-in-out;
         }
 
-        .signup-link {
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+
+        .error-message .error-icon {
+            font-size: 15px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 50%;
+        }
+
+        /* ----------------------------------------------------
+           FORM INPUTS & LABELS
+           ---------------------------------------------------- */
+        .form-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            letter-spacing: 0.01em;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper .input-icon {
+            position: absolute;
+            left: 12px;
+            font-size: 14px;
+            color: var(--text-light);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 11px 14px 11px 36px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: var(--text-light);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        /* Password visibility toggle button */
+        .pwd-toggle-btn {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 4px 6px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s ease;
+        }
+
+        .pwd-toggle-btn:hover {
+            color: var(--text-main);
+            background: var(--bg-hover);
+        }
+
+        /* ----------------------------------------------------
+           SUBMIT BUTTON WITH PHYSICAL ELEVATION
+           ---------------------------------------------------- */
+        .btn-submit {
+            width: 100%;
+            margin-top: 6px;
+            padding: 12px 16px;
+            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+            color: #ffffff;
+            border: 1px solid #1e40af;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+        }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ----------------------------------------------------
+           CARD FOOTER & NAVIGATION LINKS
+           ---------------------------------------------------- */
+        .card-footer {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
             text-align: center;
-            margin-top: 20px;
             font-size: 13px;
-            color: #64748b;
+            color: var(--text-muted);
         }
 
-        .signup-link a {
-            color: #6366f1;
+        .card-footer a {
+            color: var(--primary);
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
+            transition: color 0.15s ease;
         }
 
-        .signup-link a:hover { text-decoration: underline; }
+        .card-footer a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        /* Page Bottom Minimal Footer */
+        .page-meta-footer {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .page-meta-footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .page-meta-footer a:hover {
+            color: var(--text-main);
+        }
     </style>
 </head>
 <body>
 
-    <div class="login-panel">
-        <header>
-            <h1>Owner Console</h1>
-            <p>Authentication Required</p>
-        </header>
+    <main class="login-wrapper">
+        <div class="login-card">
+            
+            <header class="card-header">
+                <div class="brand-emblem" aria-hidden="true">🏢</div>
+                <h1 class="card-title">Owner Console</h1>
+                <p class="card-subtitle">Sign in to manage room inventory and operations</p>
+                
+                <div class="security-badge">
+                    <span class="dot"></span>
+                    <span>Authorized Session</span>
+                </div>
+            </header>
 
-        <div class="error-message" id="errorBox">
-            ❌ Invalid username or password.
-        </div>
-
-        <form action="/perform_login" method="POST">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" name="username" required autocomplete="off">
+            <!-- Error Banner (Preserves ?error=true query param trigger) -->
+            <div class="error-message" id="errorBox" role="alert">
+                <span class="error-icon">✕</span>
+                <span>Invalid credentials. Please verify your username and password.</span>
             </div>
 
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" required>
+            <!-- Paste #successBox right here -->
+            <div class="error-message" id="successBox" role="status" style="background-color: var(--green-soft); border-color: var(--green-border); color: var(--green-dark); animation: none;">
+                <span class="error-icon" style="background: rgba(16, 185, 129, 0.15);">✓</span>
+                <span id="successText">Signed out successfully.</span>
             </div>
 
-            <button type="submit">Log In</button>
-        </form>
+            <!-- Authentic Form (Exact action and field names preserved) -->
+            <form action="/perform_login" method="POST" class="form-stack" id="loginForm">
+                
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="usernameField">Username</label>
+                    </div>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input 
+                            type="text" 
+                            id="usernameField"
+                            name="username" 
+                            placeholder="e.g. owner_admin"
+                            required 
+                            autocomplete="username" 
+                            autofocus>
+                    </div>
+                </div>
 
-        <div class="signup-link">
-            Don't have an owner account? <a href="/signup.html">Register here</a>
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="passwordField">Password</label>
+                    </div>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input 
+                            type="password" 
+                            id="passwordField"
+                            name="password" 
+                            placeholder="Enter your account password"
+                            required
+                            autocomplete="current-password">
+                        <button 
+                            type="button" 
+                            class="pwd-toggle-btn" 
+                            id="togglePasswordBtn" 
+                            onclick="togglePasswordVisibility()" 
+                            aria-label="Toggle password visibility"
+                            title="Show/hide password">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span>Sign In to Hub</span>
+                    <span aria-hidden="true">→</span>
+                </button>
+            </form>
+
+            <footer class="card-footer">
+                Don’t have an owner account? <a href="/signup.html">Register here</a>
+            </footer>
+
         </div>
-    </div>
+
+        <div class="page-meta-footer">
+            <span>Property Operations & Ledger Hub</span>
+            <span>•</span>
+            <a href="javascript:void(0)" onclick="alert('Contact system administrator for credential recovery.')">Need assistance?</a>
+        </div>
+    </main>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
+        
         if (urlParams.get('error') === 'true') {
-            document.getElementById('errorBox').style.display = 'block';
+            const errorBox = document.getElementById('errorBox');
+            if (errorBox) errorBox.style.display = 'flex';
         }
+
+        if (urlParams.get('logout') === 'true' || urlParams.get('registered') === 'true') {
+            const successBox = document.getElementById('successBox');
+            const successText = document.getElementById('successText');
+            if (successBox && successText) {
+                successText.textContent = urlParams.get('registered') === 'true'
+                    ? 'Account created! Sign in with your new credentials.'
+                    : 'You have been signed out securely.';
+                successBox.style.display = 'flex';
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('passwordField');
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            if (!pwdInput || !toggleBtn) return;
+
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+                toggleBtn.title = 'Hide password';
+            } else {
+                pwdInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+                toggleBtn.title = 'Show password';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function() {
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.style.opacity = '0.85';
+            btn.innerHTML = '<span>Verifying credentials...</span>';
+        });
     </script>
 </body>
 </html>

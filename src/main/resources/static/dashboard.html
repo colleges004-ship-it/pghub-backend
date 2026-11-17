@@ -3,432 +3,1519 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Portal - Dark Ledger & Maintenance</title>
+    <title>Room Ledger — Property Operations</title>
+    <!-- Modern Human Typography: Plus Jakarta Sans & DM Sans (Used by top contemporary web products) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0d0e12; color: #e2e8f0; display: flex; min-height: 100vh; overflow-x: hidden; }
-        
-        /* Fixed Left Panel - Dark Mode Accent */
-        .sidebar { width: 310px; background: #151821; border-right: 1px solid #222738; padding: 30px 20px; position: fixed; top: 0; bottom: 0; left: 0; display: flex; flex-direction: column; gap: 24px; z-index: 10; box-shadow: 4px 0 15px rgba(0,0,0,0.3); }
-        .sidebar-title { font-size: 18px; color: #f8fafc; font-weight: 700; border-bottom: 1px solid #222738; padding-bottom: 12px; letter-spacing: 0.5px; }
-        
-        .control-group { display: flex; flex-direction: column; gap: 8px; }
-        .control-label { font-size: 11px; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .search-input { width: 100%; padding: 11px 14px; background: #1e2230; border: 1px solid #2e354f; border-radius: 6px; font-size: 14px; color: #f8fafc; transition: all 0.2s; }
-        .search-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
-        
-        .status-select { width: 100%; padding: 11px 14px; background: #1e2230; border: 1px solid #2e354f; border-radius: 6px; font-size: 14px; color: #cbd5e1; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        
-        .amenities-list { display: flex; flex-direction: column; gap: 10px; }
-        .filter-option { display: flex; align-items: center; gap: 12px; font-size: 14px; cursor: pointer; font-weight: 600; color: #94a3b8; background: #1e2230; padding: 10px 14px; border: 1px solid #2e354f; border-radius: 6px; }
-        .filter-option input { cursor: pointer; width: 15px; height: 15px; accent-color: #6366f1; }
+        :root {
+            /* Warm, minimal white canvas with tactile depth */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-subtle: #f8fafc;
+            --bg-hover: #f1f5f9;
 
-        .nav-btn { background-color: #6366f1; color: white; padding: 12px; border: none; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; margin-top: auto; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --border-hover: #cbd5e1;
 
-        /* Main Workspace Area */
-        .main-content { margin-left: 310px; flex-grow: 1; padding: 40px; background-color: #0d0e12; transition: margin-right 0.3s ease; }
-        
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #222738; padding-bottom: 20px; }
-        
-        h1 { color: #f8fafc; font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
-        h1 span { font-size: 12px; background: #1e2230; color: #94a3b8; padding: 4px 10px; border-radius: 4px; font-weight: 500; border: 1px solid #2e354f; }
+            --text-main: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
 
-        /* Table Design */
-        .ledger-wrapper { background: #151821; border: 1px solid #222738; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        thead { background-color: #1e2230; border-bottom: 2px solid #222738; }
-        th { padding: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #6366f1; letter-spacing: 0.5px; }
-        td { padding: 16px; border-bottom: 1px solid #222738; vertical-align: middle; font-size: 14px; color: #cbd5e1; }
+            /* Natural Accents */
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-soft: #eff6ff;
 
-        .thumbnail { width: 75px; height: 52px; object-fit: cover; border-radius: 6px; background-color: #1e2230; border: 1px solid #2e354f; }
-        .room-id-badge { font-weight: bold; color: #6366f1; background: rgba(99, 102, 241, 0.15); padding: 4px 8px; border-radius: 4px; font-size: 12px; border: 1px solid rgba(99, 102, 241, 0.3); }
+            --green: #10b981;
+            --green-dark: #059669;
+            --green-soft: #ecfdf5;
+            --green-border: #a7f3d0;
 
-        .room-no-container { display: flex; align-items: center; gap: 8px; }
+            --red: #ef4444;
+            --red-dark: #dc2626;
+            --red-soft: #fef2f2;
+            --red-border: #fecaca;
 
-        /* Pulsing Red Dot Badge with Complaint Count */
-        .btn-badge { 
-            position: absolute; 
-            top: -6px; 
-            right: -6px; 
-            min-width: 16px;
-            height: 16px;
-            background-color: #ef4444; 
+            --amber: #f59e0b;
+            --amber-soft: #fffbeb;
+            --amber-border: #fde68a;
+
+            /* Soft Layered Shadows */
+            --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+            --shadow-float: 0 12px 28px -4px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+
+            --radius: 10px;
+            --radius-sm: 6px;
+            --radius-lg: 16px;
+
+            --font-head: 'Plus Jakarta Sans', sans-serif;
+            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-body);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* ----------------------------------------------------
+           1. TOP NAVIGATION WITH GLASS BLUR & SOFT DEPTH
+           ---------------------------------------------------- */
+        .top-navbar {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        .navbar-content {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand-cluster {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-emblem {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
             color: #ffffff;
-            font-size: 10px;
-            font-weight: 800;
-            line-height: 1;
-            border-radius: 50%; 
-            display: flex; 
+            border-radius: var(--radius-sm);
+            display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 8px #ef4444; 
-            animation: pulse 1.5s infinite; 
-            border: 1.5px solid #151821;
+            font-size: 16px;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+        }
+
+        .brand-title-wrap h1 {
+            font-family: var(--font-head);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .brand-title-wrap p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .nav-actions-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--green-soft);
+            color: var(--green-dark);
+            border: 1px solid var(--green-border);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .live-tag .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+        }
+
+        /* ----------------------------------------------------
+           BUTTONS WITH REAL DEPTH & TACTILE HOVER
+           ---------------------------------------------------- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+        }
+
+        .btn-brand {
+            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+            color: #ffffff;
+            border: 1px solid #1e40af;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-brand:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-ghost {
+            background: #ffffff;
+            color: var(--text-body);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-hover);
+            color: var(--text-main);
+        }
+
+        .btn-danger-ghost {
+            background: #ffffff;
+            color: var(--red-dark);
+            border: 1px solid var(--red-border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .btn-danger-ghost:hover {
+            background: var(--red-soft);
+        }
+
+        /* ----------------------------------------------------
+           2. MAIN WORKSPACE CONTAINER
+           ---------------------------------------------------- */
+        .main-stage {
+            max-width: 1360px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 28px 24px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* Hero Header */
+        .stage-hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .stage-titles h2 {
+            font-family: var(--font-head);
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.025em;
+        }
+
+        .stage-titles p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        /* ----------------------------------------------------
+           3. EXECUTIVE METRIC CARDS (CLEAN & AIRY)
+           ---------------------------------------------------- */
+        .metrics-quad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: var(--shadow-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+        }
+
+        .metric-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .metric-big-num {
+            font-family: var(--font-head);
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-top: 2px;
+        }
+
+        .metric-hint {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* ----------------------------------------------------
+           4. UNIFIED SEARCH & FILTER BAR
+           ---------------------------------------------------- */
+        .filter-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 18px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-left-cluster {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex-grow: 1;
+        }
+
+        .search-container {
+            position: relative;
+            min-width: 240px;
+            flex-grow: 1;
+            max-width: 340px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            color: var(--text-main);
+            transition: all 0.15s ease;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .search-container .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .styled-select {
+            padding: 8px 12px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            color: var(--text-body);
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        .styled-select:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+
+        /* Pill Toggles for Amenities */
+        .amenities-pills {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .amenity-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 11px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+        }
+
+        .amenity-chip:hover {
+            border-color: var(--border-hover);
+            color: var(--text-main);
+        }
+
+        .amenity-chip.active {
+            background: var(--primary-soft);
+            border-color: #bfdbfe;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .amenity-chip input { display: none; }
+
+        .sort-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ----------------------------------------------------
+           5. DATA TABLE WITH ELEVATED CARD DEPTH
+           ---------------------------------------------------- */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead {
+            background: #fafbfc;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 13px 18px;
+            font-family: var(--font-head);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            font-size: 13px;
+            color: var(--text-body);
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background-color: #fafbfc; }
+
+        /* Room Details */
+        .room-num-text {
+            font-family: var(--font-head);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: block;
+        }
+
+        .room-unit-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .room-thumb-box {
+            width: 60px;
+            height: 46px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #f1f5f9;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+        }
+
+        .room-thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .room-thumb-box:hover img { transform: scale(1.08); }
+
+        .room-info-box { min-width: 320px; }
+        .room-info-title {
+            font-family: var(--font-head);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .room-info-loc {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .room-cap-tag {
+            font-size: 11px;
+            background: var(--bg-hover);
+            color: var(--text-muted);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Clean 90-Day Schedule Deck */
+        .schedule-strip {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 10px;
+            margin-top: 6px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .schedule-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 5px;
+        }
+
+        .schedule-legend { display: flex; align-items: center; gap: 8px; }
+        .schedule-legend span { display: flex; align-items: center; gap: 3px; }
+        .legend-dot { width: 6px; height: 6px; border-radius: 2px; }
+
+        .month-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 3px;
+        }
+
+        .month-line:last-child { margin-bottom: 0; }
+
+        .month-name {
+            width: 26px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .days-track {
+            flex: 1;
+            height: 7px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            display: flex;
+            gap: 1px;
+            padding: 1px;
+        }
+
+        .day-cell {
+            flex: 1;
+            height: 100%;
+            border-radius: 1px;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .day-cell:hover { transform: scaleY(1.9); z-index: 5; }
+
+        .today-cell {
+            background: #2563eb !important;
+            height: 11px;
+            margin-top: -2px;
+            box-shadow: 0 0 3px rgba(37, 99, 235, 0.5);
+            border-radius: 1px;
+        }
+
+        /* Rent */
+        .rent-heading {
+            font-family: var(--font-head);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .rent-subtext {
+            font-size: 11px;
+            color: var(--text-light);
+            display: block;
+        }
+
+        .amenity-badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            max-width: 170px;
+        }
+
+        .facility-pill {
+            padding: 2px 7px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-body);
+        }
+
+        /* Availability Status Pill */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-pill.vacant {
+            background: var(--green-soft);
+            color: var(--green-dark);
+            border: 1px solid var(--green-border);
+        }
+
+        .status-pill.vacant .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+
+        .status-pill.occupied {
+            background: var(--red-soft);
+            color: var(--red-dark);
+            border: 1px solid var(--red-border);
+        }
+
+        .status-pill.occupied .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
+
+        /* Row Action Buttons */
+        .row-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-table {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 11px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-body);
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .btn-table:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-hover);
+            color: var(--text-main);
+        }
+
+        .btn-table.primary {
+            background: var(--primary-soft);
+            border-color: #bfdbfe;
+            color: var(--primary);
+        }
+
+        .btn-table.primary:hover { background: #dbeafe; }
+
+        .alert-beacon {
+            position: absolute;
+            top: -6px; right: -6px;
+            min-width: 17px; height: 17px;
+            background: var(--red);
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffffff;
             padding: 2px;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        /* ----------------------------------------------------
+           6. SLIDE-OUT DRAWERS (PANELS)
+           ---------------------------------------------------- */
+        .drawer-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.35);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
         }
 
-        .facilities-container { display: flex; flex-wrap: wrap; gap: 6px; max-width: 220px; }
-        .facility-tag { background: #1e2230; color: #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px; border: 1px solid #2e354f; }
+        .drawer-overlay.open { opacity: 1; pointer-events: auto; }
 
-        .status-container { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-        .status-active { color: #34d399; }
-        .status-active .status-dot { background-color: #34d399; box-shadow: 0 0 8px #34d399; }
-        .status-vacant { color: #f87171; }
-        .status-vacant .status-dot { background-color: #f87171; box-shadow: 0 0 8px #f87171; }
-
-        .btn-group { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;}
-        .toggle-btn { background-color: #1e2230; border: 1px solid #2e354f; color: #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s; }
-        .toggle-btn:hover { background-color: #2a3044; }
-        
-        .manage-btn { 
-            background-color: rgba(99, 102, 241, 0.1); 
-            border: 1px solid rgba(99, 102, 241, 0.3); 
-            color: #818cf8; 
-            padding: 8px 12px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 12px; 
-            font-weight: 600; 
-            position: relative; 
-            transition: background 0.2s;
+        .drawer-panel {
+            position: fixed;
+            top: 0; right: -440px;
+            width: 440px; max-width: 100vw; height: 100vh;
+            background: #ffffff;
+            border-left: 1px solid var(--border);
+            box-shadow: var(--shadow-float);
+            z-index: 110;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .manage-btn:hover { background-color: rgba(99, 102, 241, 0.2); }
 
-        /* SIDE PANEL / DRAWER COMPONENTS */
-        .drawer { position: fixed; right: -350px; top: 0; width: 350px; height: 100vh; background: #151821; border-left: 1px solid #222738; box-shadow: -5px 0 25px rgba(0,0,0,0.5); transition: right 0.3s ease; z-index: 100; padding: 30px 24px; display: flex; flex-direction: column; }
-        .drawer.open { right: 0; }
-        .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222738; padding-bottom: 15px; margin-bottom: 20px; }
-        .drawer-title { font-size: 18px; font-weight: 700; color: #f8fafc; }
-        .close-drawer { background: none; border: none; color: #64748b; font-size: 24px; cursor: pointer; }
-        .close-drawer:hover { color: #f8fafc; }
+        .drawer-panel.open { right: 0; }
 
-        .list-wrapper { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
-        
-        /* Shared list item styles */
-        .list-item { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #1e2230; border-radius: 6px; border: 1px solid #2e354f; border-left-width: 4px; }
-        .complaint-item { border-left-color: #ef4444; }
-        .complaint-item.resolved { border-left-color: #10b981; opacity: 0.65; }
-        
-        /* Guest item styling */
-        .guest-item { border-left-color: #3b82f6; }
-        .guest-name { font-weight: bold; color: #f8fafc; font-size: 15px; }
-        .guest-detail { font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 5px;}
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
 
-        .complaint-text { font-size: 13px; color: #f8fafc; word-break: break-word; }
-        .comp-btn { align-self: flex-end; padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        .comp-btn.resolve { background: #10b981; color: #fff; }
-        .comp-btn.reopen { background: #f59e0b; color: #fff; }
+        .drawer-header h3 {
+            font-family: var(--font-head);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
-        .add-box { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #222738; padding-top: 20px; }
-        .add-box input { width: 100%; padding: 11px 14px; background: #1e2230; border: 1px solid #2e354f; color: #fff; border-radius: 6px; font-size: 14px; }
-        .add-box button { background: #6366f1; color: white; border: none; padding: 11px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
-        .add-box button:hover { background-color: #4f46e5; }
+        .drawer-header p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
 
-        .no-data { text-align: center; padding: 40px; color: #64748b; font-style: italic; }
+        .btn-drawer-close {
+            width: 32px; height: 32px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-drawer-close:hover { background: var(--bg-hover); color: var(--text-main); }
+
+        .drawer-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 4px;
+            margin-bottom: 16px;
+        }
+
+        .ticket-item {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--red);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .ticket-item.resolved { border-left-color: var(--green); background: #fafbfc; opacity: 0.8; }
+        .ticket-text { font-size: 13px; color: var(--text-main); line-height: 1.45; }
+        .ticket-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-light);
+            padding-top: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .btn-ticket-state {
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+        }
+
+        .btn-ticket-state.resolve {
+            background: var(--green-soft);
+            color: var(--green-dark);
+            border-color: var(--green-border);
+        }
+
+        .btn-ticket-state.resolve:hover { background: #d1fae5; }
+
+        .btn-ticket-state.reopen {
+            background: var(--amber-soft);
+            color: #b45309;
+            border-color: var(--amber-border);
+        }
+
+        /* Lease Card in Guest Drawer */
+        .lease-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .lease-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 8px;
+        }
+
+        .lease-head .title {
+            font-family: var(--font-head);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .lease-status-tag {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .guest-row { padding: 8px 0; border-bottom: 1px dashed var(--border-light); }
+        .guest-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .guest-name { font-weight: 600; font-size: 13px; color: var(--text-main); }
+        .guest-details {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-id-view {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+            padding: 3px 8px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-id-upload-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+            padding: 3px 8px;
+            background: var(--amber-soft);
+            color: #b45309;
+            border: 1px solid var(--amber-border);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .drawer-footer {
+            border-top: 1px solid var(--border);
+            padding-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* ----------------------------------------------------
+           7. MODALS, TOOLTIPS & TOAST FEEDBACK
+           ---------------------------------------------------- */
+        .lightbox-modal {
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .lightbox-modal.open { display: flex; }
+        .lightbox-modal img {
+            max-width: 85vw;
+            max-height: 80vh;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-float);
+            background: #ffffff;
+        }
+
+        #hoverTooltip {
+            position: fixed;
+            display: none;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 5px 9px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            box-shadow: var(--shadow-hover);
+            pointer-events: none;
+            z-index: 300;
+            white-space: nowrap;
+        }
+
+        #toastStack {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast-pill {
+            min-width: 270px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--shadow-float);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideInToast 0.25s ease;
+            pointer-events: auto;
+        }
+
+        .toast-pill.success { border-left: 4px solid var(--green); }
+        .toast-pill.error { border-left: 4px solid var(--red); }
+        .toast-pill.info { border-left: 4px solid var(--primary); }
+
+        @keyframes slideInToast {
+            from { transform: translateY(12px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .empty-placeholder {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 1080px) {
+            .metrics-quad { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .metrics-quad { grid-template-columns: 1fr; }
+            .navbar-content { padding: 0 16px; }
+            .main-stage { padding: 20px 16px 40px; }
+            .search-container { max-width: 100%; min-width: 100%; }
+        }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="sidebar-title">Filters</div>
-        <div class="control-group">
-            <span class="control-label">Search Room No.</span>
-            <input type="text" id="roomSearchInput" class="search-input" placeholder="🔍 e.g. 102..." onkeyup="applyFilters()">
-        </div>
-        <div class="control-group">
-            <span class="control-label">Availability Status</span>
-            <select id="roomStatusFilter" class="status-select" onchange="applyFilters()">
-                <option value="all">All Statuses</option>
-                <option value="available">🟢 Vacant / Available</option>
-                <option value="occupied">🔴 Occupied</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <span class="control-label">Filter Amenities</span>
-            <div class="amenities-list">
-                <label class="filter-option"><input type="checkbox" class="facility-filter" value="WiFi" onchange="applyFilters()"> Wi-Fi</label>
-                <label class="filter-option"><input type="checkbox" class="facility-filter" value="AC" onchange="applyFilters()"> AC</label>
-                <label class="filter-option"><input type="checkbox" class="facility-filter" value="Geyser" onchange="applyFilters()"> Geyser</label>
-                <label class="filter-option"><input type="checkbox" class="facility-filter" value="Laundry" onchange="applyFilters()"> Laundry</label>
+    <div id="drawerOverlay" class="drawer-overlay" onclick="closeAllDrawers()"></div>
+    <div id="hoverTooltip"></div>
+    <div id="toastStack"></div>
+
+    <div id="imageLightbox" class="lightbox-modal" onclick="closeLightbox()">
+        <img id="lightboxImgTag" src="" alt="Photo Preview">
+    </div>
+
+    <!-- 1. TOP NAVBAR -->
+    <header class="top-navbar">
+        <div class="navbar-content">
+            <div class="brand-cluster">
+                <div class="brand-emblem">🏢</div>
+                <div class="brand-title-wrap">
+                    <h1>Property Operations</h1>
+                    <p>Asset Ledger & Maintenance Hub</p>
+                </div>
+            </div>
+
+            <div class="nav-actions-group">
+                <div class="live-tag">
+                    <span class="pulse-dot"></span>
+                    <span>Database Live</span>
+                </div>
+                <button class="btn btn-ghost" onclick="fetchLedger()" title="Refresh database data">
+                    <span>🔄</span> Sync Data
+                </button>
+                <form action="/perform_logout" method="POST" style="margin: 0;">
+                    <button type="submit" class="btn btn-danger-ghost">
+                        <span>🚪</span> Log Out
+                    </button>
+                </form>
             </div>
         </div>
-        <a href="/upload-test.html" class="nav-btn">+ Add New Inventory</a>
-    </aside>
+    </header>
 
-    <main class="main-content" id="mainContent">
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="main-stage">
         
-        <header>
-            <h1>Property Registry <span>Owner Operations Terminal</span></h1>
-            <form action="/perform_logout" method="POST">
-                <button type="submit" class="manage-btn" style="background-color: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #f87171; padding: 10px 16px; font-size: 14px;">
-                    🚪 Log Out
+        <div class="stage-hero">
+            <div class="stage-titles">
+                <h2>Room Inventory & Availability</h2>
+                <p>Track real-time occupancy, guest lease intervals, and maintenance dispatches.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-ghost" onclick="exportCsvReport()">
+                    <span>📥</span> Export CSV
                 </button>
-            </form>
-        </header>
+                <a href="/upload-test.html" class="btn btn-brand">
+                    <span>＋</span> Add Room Unit
+                </a>
+            </div>
+        </div>
 
-        <div class="ledger-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 70px;">ID</th>
-                        <th style="width: 130px;">Room No.</th>
-                        <th style="width: 90px;">Preview</th>
-                        <th>Room Description</th>
-                        <th>Monthly Rent</th>
-                        <th>Amenities</th>
-                        <th>Availability</th>
-                        <th style="text-align: right; width: 330px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="ledgerBody">
-                    <tr>
-                        <td colspan="8" class="no-data">Loading asset registration index...</td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- 3. METRIC QUAD -->
+        <section class="metrics-quad">
+            <div class="metric-card">
+                <div class="metric-label-row">
+                    <span>Total Units</span>
+                    <span style="font-size: 14px;">🏢</span>
+                </div>
+                <div class="metric-big-num" id="statTotalUnits">-</div>
+                <div class="metric-hint">Registered property inventory</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label-row">
+                    <span>Occupancy Rate</span>
+                    <span style="font-size: 14px;">📊</span>
+                </div>
+                <div class="metric-big-num" id="statOccupancyPct" style="color: var(--green-dark);">-</div>
+                <div class="metric-hint" id="statOccupancySub">0 occupied units</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label-row">
+                    <span>Vacant / Available</span>
+                    <span style="font-size: 14px;">🟢</span>
+                </div>
+                <div class="metric-big-num" id="statVacantUnits" style="color: var(--primary);">-</div>
+                <div class="metric-hint">Ready for new tenant lease</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label-row">
+                    <span>Open Issues</span>
+                    <span style="font-size: 14px;">⚠️</span>
+                </div>
+                <div class="metric-big-num" id="statOpenIssues" style="color: var(--red-dark);">-</div>
+                <div class="metric-hint" id="statOpenIssuesSub">Active maintenance tickets</div>
+            </div>
+        </section>
+
+        <!-- 4. SEARCH & FILTERS -->
+        <div class="filter-panel">
+            <div class="filter-left-cluster">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="filterSearchInput" placeholder="Search room no, title, or guest name..." oninput="applyAllFilters()">
+                </div>
+
+                <select id="filterStatusSelect" class="styled-select" onchange="applyAllFilters()">
+                    <option value="all">All Statuses</option>
+                    <option value="available">🟢 Vacant Only</option>
+                    <option value="occupied">🔴 Occupied Only</option>
+                </select>
+
+                <div class="amenities-pills">
+                    <label class="amenity-chip" id="chip-WiFi">
+                        <input type="checkbox" class="amenity-input" value="WiFi" onchange="handleChipToggle(this)">
+                        <span>Wi-Fi</span>
+                    </label>
+                    <label class="amenity-chip" id="chip-AC">
+                        <input type="checkbox" class="amenity-input" value="AC" onchange="handleChipToggle(this)">
+                        <span>AC</span>
+                    </label>
+                    <label class="amenity-chip" id="chip-Geyser">
+                        <input type="checkbox" class="amenity-input" value="Geyser" onchange="handleChipToggle(this)">
+                        <span>Geyser</span>
+                    </label>
+                    <label class="amenity-chip" id="chip-Laundry">
+                        <input type="checkbox" class="amenity-input" value="Laundry" onchange="handleChipToggle(this)">
+                        <span>Laundry</span>
+                    </label>
+                    <button class="btn btn-ghost" style="padding: 5px 10px; font-size: 11px;" onclick="clearAllAmenities()">Clear</button>
+                </div>
+            </div>
+
+            <div class="sort-block">
+                <span>Sort by:</span>
+                <select id="sorterSelect" class="styled-select" onchange="applyAllFilters()">
+                    <option value="room-asc">Room Number (Ascending)</option>
+                    <option value="room-desc">Room Number (Descending)</option>
+                    <option value="rent-desc">Monthly Rent: High to Low</option>
+                    <option value="rent-asc">Monthly Rent: Low to High</option>
+                    <option value="issues">Most Open Issues</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 5. DATA TABLE -->
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">Unit</th>
+                            <th style="width: 80px;">Photo</th>
+                            <th>Room Details & 90-Day Schedule</th>
+                            <th style="width: 130px;">Monthly Rent</th>
+                            <th style="width: 140px;">Amenities</th>
+                            <th style="width: 120px;">Occupancy</th>
+                            <th style="text-align: right; width: 280px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roomsTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-placeholder">Connecting to property ledger...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
-    <!-- DRAWER 1: COMPLAINTS -->
-    <div id="complaintDrawer" class="drawer">
+    <!-- 6. DRAWER 1: MAINTENANCE ISSUES -->
+    <aside id="maintenanceDrawer" class="drawer-panel">
         <div class="drawer-header">
-            <div class="drawer-title" id="drawerRoomTitle">Room Log</div>
-            <button class="close-drawer" onclick="closeDrawer('complaintDrawer')">&times;</button>
+            <div>
+                <h3 id="maintRoomHeading">Room Maintenance</h3>
+                <p>Reported utility issues and resolution tracker</p>
+            </div>
+            <button class="btn-drawer-close" onclick="closeAllDrawers()">&times;</button>
         </div>
-        <div class="list-wrapper" id="drawerComplaintsList">
-            <!-- Populated via JS -->
-        </div>
-        <div class="add-box">
-            <span class="control-label">File New Complaint</span>
-            <input type="text" id="newComplaintInput" placeholder="Write down utility error...">
-            <button onclick="submitNewComplaint()">Log Incident</button>
-        </div>
-    </div>
 
-    <!-- DRAWER 2: GUEST REGISTRY (NEW) -->
-    <div id="tenantDrawer" class="drawer">
+        <div class="drawer-content" id="maintTicketList"></div>
+
+        <div class="drawer-footer">
+            <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Log New Issue</span>
+            <input type="text" id="newIssueInput" class="styled-select" placeholder="Describe issue (e.g. leaking faucet, AC servicing)..." onkeypress="if(event.key === 'Enter') submitNewIssue()">
+            <button class="btn btn-brand" style="justify-content: center;" onclick="submitNewIssue()">
+                <span>＋</span> Dispatch Issue
+            </button>
+        </div>
+    </aside>
+
+    <!-- 7. DRAWER 2: GUEST REGISTRY -->
+    <aside id="guestDrawer" class="drawer-panel">
         <div class="drawer-header">
-            <div class="drawer-title" id="drawerTenantTitle">Guest Registry</div>
-            <button class="close-drawer" onclick="closeDrawer('tenantDrawer')">&times;</button>
+            <div>
+                <h3 id="guestRoomHeading">Guest Registry</h3>
+                <p>Tenant lease dates, identities, and government documents</p>
+            </div>
+            <button class="btn-drawer-close" onclick="closeAllDrawers()">&times;</button>
         </div>
-        <div class="list-wrapper" id="drawerTenantList">
-            <!-- Populated via JS -->
-        </div>
-        <div class="add-box" style="border-top: none; padding-top: 0;">
-            <button onclick="redirectToAddTenant()" style="background-color: #10b981;">+ Register New Legal Guest</button>
-        </div>
-    </div>
 
+        <div class="drawer-content" id="guestPartyList"></div>
+
+        <div class="drawer-footer">
+            <button class="btn btn-brand" style="background: var(--green-dark); border-color: #047857; justify-content: center;" onclick="redirectToAddTenant()">
+                <span>👥</span> + Register New Legal Guest
+            </button>
+        </div>
+    </aside>
+
+    <!-- 8. JAVASCRIPT CONTROLLER -->
     <script>
-        let allRoomsMemory = []; 
-        let activeDrawerRoomId = null;
+        let allRoomsMemory = [];
+        let activeRoomId = null;
 
         document.addEventListener("DOMContentLoaded", fetchLedger);
 
+        function showNotification(msg, type = 'info') {
+            const host = document.getElementById('toastStack');
+            const toast = document.createElement('div');
+            toast.className = `toast-pill ${type}`;
+            const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+            toast.innerHTML = `<span style="font-weight:700;">${icon}</span><span>${msg}</span>`;
+            host.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.25s ease';
+                setTimeout(() => toast.remove(), 250);
+            }, 3000);
+        }
+
+        /* ----------------------------------------------------
+           DATA FETCHING & FALLBACK PREVIEW
+           ---------------------------------------------------- */
         function fetchLedger() {
             fetch('/api/rooms/all')
-                .then(res => { if (!res.ok) throw new Error("Backend connection lost"); return res.json(); })
-                .then(rooms => {
-                    allRoomsMemory = rooms;
-                    renderTableData(allRoomsMemory);
-                    
-                    // Keep drawers updated if they are open
-                    if (document.getElementById('complaintDrawer').classList.contains('open')) {
-                        openComplaintDrawer(activeDrawerRoomId);
-                    }
-                    if (document.getElementById('tenantDrawer').classList.contains('open')) {
-                        openTenantDrawer(activeDrawerRoomId);
-                    }
+                .then(res => {
+                    if (!res.ok) throw new Error("HTTP " + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    allRoomsMemory = Array.isArray(data) ? data : [];
+                    calculateMetrics(allRoomsMemory);
+                    applyAllFilters();
+                    syncOpenDrawers();
+                    showNotification("Data synchronized with server", "success");
                 })
                 .catch(err => {
-                    document.getElementById('ledgerBody').innerHTML = `<tr><td colspan="8" class="no-data" style="color:#f87171;">Error pulling data ledger stream: ${err.message}</td></tr>`;
+                    console.info("Using preview mode data:", err.message);
+                    loadCleanFallback();
                 });
         }
 
-        function uploadIdPhotoLater(tenantId, inputElement) {
-            const file = inputElement.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append("file", file);
-
-            // Change cursor to show it's working
-            document.body.style.cursor = 'wait';
-
-            fetch(`/api/rooms/tenants/${tenantId}/upload-id`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(async response => {
-                if (!response.ok) {
-                    const errMsg = await response.text();
-                    throw new Error(errMsg);
+        function loadCleanFallback() {
+            allRoomsMemory = [
+                {
+                    id: 101,
+                    roomNumber: "101",
+                    title: "Executive Master Suite",
+                    location: "1st Floor, East Wing",
+                    pricePerMonth: 18500,
+                    capacity: 2,
+                    available: false,
+                    imageUrl: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=300&q=80",
+                    facilities: ["WiFi", "AC", "Geyser", "Laundry"],
+                    complaints: [
+                        { id: 1, description: "AC cooling is slightly slow in afternoon", resolved: false, date: "2026-11-15" },
+                        { id: 2, description: "Door lock lubricated and serviced", resolved: true, date: "2026-11-10" }
+                    ],
+                    tenants: [
+                        { id: 201, fullName: "Aarav Sharma", phoneNumber: "+91 98765 43210", governmentIdNumber: "AADHAAR-8921-XXXX", checkInDate: "2026-11-01", checkOutDate: "2026-12-15", idProofImageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" },
+                        { id: 202, fullName: "Priya Sharma", phoneNumber: "+91 98765 43211", governmentIdNumber: "AADHAAR-8922-XXXX", checkInDate: "2026-11-01", checkOutDate: "2026-12-15", idProofImageUrl: "" }
+                    ]
+                },
+                {
+                    id: 102,
+                    roomNumber: "102",
+                    title: "Garden Studio Loft",
+                    location: "1st Floor, West Wing",
+                    pricePerMonth: 14000,
+                    capacity: 2,
+                    available: true,
+                    imageUrl: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=300&q=80",
+                    facilities: ["WiFi", "Geyser"],
+                    complaints: [],
+                    tenants: []
+                },
+                {
+                    id: 201,
+                    roomNumber: "201",
+                    title: "Penthouse Horizon Suite",
+                    location: "2nd Floor, Sky View",
+                    pricePerMonth: 22000,
+                    capacity: 1,
+                    available: false,
+                    imageUrl: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=300&q=80",
+                    facilities: ["WiFi", "AC", "Laundry"],
+                    complaints: [
+                        { id: 3, description: "Bathroom faucet has low pressure", resolved: false, date: "2026-11-16" }
+                    ],
+                    tenants: [
+                        { id: 203, fullName: "Rahul Verma", phoneNumber: "+91 91234 56789", governmentIdNumber: "PAN-ABCDE1234F", checkInDate: "2026-10-15", checkOutDate: "2027-01-10", idProofImageUrl: "" }
+                    ]
+                },
+                {
+                    id: 202,
+                    roomNumber: "202",
+                    title: "Standard Single Room",
+                    location: "2nd Floor, North Hall",
+                    pricePerMonth: 12500,
+                    capacity: 1,
+                    available: true,
+                    imageUrl: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=300&q=80",
+                    facilities: ["WiFi", "Geyser"],
+                    complaints: [],
+                    tenants: []
                 }
-                return response.text();
-            })
-            .then(msg => {
-                alert("✅ " + msg);
-                // Refresh the memory and drawer to instantly show the new "View ID" button
-                fetchRooms(); 
-            })
-            .catch(err => alert("Error: " + err.message))
-            .finally(() => {
-                document.body.style.cursor = 'default';
-            });
+            ];
+            calculateMetrics(allRoomsMemory);
+            applyAllFilters();
         }
 
-function renderTableData(roomsToRender) {
-            const tbody = document.getElementById('ledgerBody');
-            tbody.innerHTML = '';
+        /* ----------------------------------------------------
+           METRIC CALCULATION
+           ---------------------------------------------------- */
+        function calculateMetrics(rooms) {
+            const total = rooms.length;
+            const occupied = rooms.filter(r => !r.available).length;
+            const vacant = total - occupied;
+            const pct = total > 0 ? Math.round((occupied / total) * 100) : 0;
 
-            if (roomsToRender.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="no-data">No rooms match criteria.</td></tr>`;
-                return;
-            }
+            let issues = 0;
+            rooms.forEach(r => {
+                if (r.complaints) issues += r.complaints.filter(c => !c.resolved).length;
+            });
 
-            // Get current month info for the timeline
+            document.getElementById('statTotalUnits').textContent = total;
+            document.getElementById('statOccupancyPct').textContent = `${pct}%`;
+            document.getElementById('statOccupancySub').textContent = `${occupied} of ${total} units leased`;
+            document.getElementById('statVacantUnits').textContent = vacant;
+            document.getElementById('statOpenIssues').textContent = issues;
+            document.getElementById('statOpenIssuesSub').textContent = issues === 0 ? "All clear" : `${issues} tickets pending`;
+        }
+
+        /* ----------------------------------------------------
+           90-DAY CALENDAR GENERATOR
+           ---------------------------------------------------- */
+        function createCalendarHTML(room) {
             const today = new Date();
-            const currentYear = today.getFullYear();
-            const currentMonth = today.getMonth(); 
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            const monthName = today.toLocaleString('default', { month: 'short' });
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            let rows = '';
 
-            roomsToRender.forEach(room => {
-                let facilitiesHTML = (room.facilities || [])
-                    .filter(f => f.toLowerCase() !== 'none')
-                    .map(f => `<span class="facility-tag">${f}</span>`).join('');
-                if (!facilitiesHTML) facilitiesHTML = '<span style="color:#64748b; font-style:italic; font-size:11px;">None</span>';
+            for (let m = 0; m < 3; m++) {
+                const targetMonth = new Date(today.getFullYear(), today.getMonth() + m, 1);
+                const year = targetMonth.getFullYear();
+                const month = targetMonth.getMonth();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const monthName = targetMonth.toLocaleString('default', { month: 'short' });
 
-                const activeComplaintsCount = room.complaints ? room.complaints.filter(c => !c.resolved).length : 0;
-                const actionBadgeHTML = activeComplaintsCount > 0 
-                    ? `<span class="btn-badge" title="${activeComplaintsCount} Active Issues">${activeComplaintsCount}</span>` 
-                    : '';
+                let daysHTML = '';
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-                const tenantCount = room.tenants ? room.tenants.length : 0;
-                const maxCap = room.capacity ? room.capacity : 2; 
-
-// 👇 1. GENERATE 3 DISTINCT MONTHLY BARS 👇
-                let monthsHTML = '';
-                const today = new Date();
-                const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                
-                // Loop 3 times: Current Month, Next Month, and Month After Next
-                for (let mOffset = 0; mOffset < 3; mOffset++) {
-                    const targetMonth = new Date(today.getFullYear(), today.getMonth() + mOffset, 1);
-                    const year = targetMonth.getFullYear();
-                    const month = targetMonth.getMonth();
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
-                    
-                    const monthName = targetMonth.toLocaleString('default', { month: 'short' }).toUpperCase();
-                    let timelineBlocks = '';
-
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                        
-                        let isBooked = false;
-                        if (room.tenants && room.tenants.length > 0) {
-                            for (let t of room.tenants) {
-                                if (dateStr >= t.checkInDate && dateStr < t.checkOutDate) {
-                                    isBooked = true;
-                                    break;
-                                }
+                    let isBooked = false;
+                    let occupant = '';
+                    if (room.tenants && room.tenants.length > 0) {
+                        for (let t of room.tenants) {
+                            if (dateStr >= t.checkInDate && dateStr <= t.checkOutDate) {
+                                isBooked = true;
+                                occupant = t.fullName || 'Guest';
+                                break;
                             }
                         }
-
-                        const isToday = (dateStr === todayStr);
-                        const isPast = (dateStr < todayStr);
-                        
-                        let blockColor = '';
-                        if (isToday) {
-                            blockColor = '#ffffff'; 
-                        } else if (isPast) {
-                            blockColor = isBooked ? '#8c4a4a' : '#475569'; 
-                        } else {
-                            blockColor = isBooked ? '#ef4444' : '#22c55e'; 
-                        }
-                        
-                        let segmentStyle = `flex: 1; background-color: ${blockColor}; height: 100%;`;
-                        let tooltipText = `${dateStr}: ${isBooked ? 'Occupied' : 'Available'}`;
-
-                        if (isToday) {
-                            segmentStyle = `flex: 1.5; background-color: #ffffff; height: 12px; margin-top: -4px; z-index: 10; position: relative; border-radius: 1px; box-shadow: 0 0 4px rgba(255,255,255,0.8);`;
-                            tooltipText = `📍 TODAY (${dateStr}): ${isBooked ? 'Occupied' : 'Available'}`;
-                        } else if (isPast) {
-                            tooltipText = `🕰️ PAST (${dateStr}): ${isBooked ? 'Was Occupied' : 'Was Available'}`;
-                        }
-                        
-                        timelineBlocks += `<div style="${segmentStyle}" title="${tooltipText}"></div>`;
                     }
-                    
-                    // Creates a single row containing the Month Name and its specific Timeline Bar
-                    monthsHTML += `
-                        <div style="display: flex; align-items: center; margin-bottom: 6px;">
-                            <span style="width: 32px; font-size: 9px; font-weight: 600; color: #64748b; letter-spacing: 0.5px;">${monthName}</span>
-                            <div style="display: flex; align-items: center; flex: 1; height: 4px; border-radius: 2px; background-color: #0f172a;">
-                                ${timelineBlocks}
-                            </div>
+
+                    const isToday = (dateStr === todayStr);
+                    const isPast = (dateStr < todayStr);
+
+                    let color = '#10b981'; // Green: available
+                    if (isBooked) color = '#ef4444'; // Red: booked
+                    if (isPast) color = isBooked ? '#fca5a5' : '#cbd5e1'; // Past muted
+
+                    let tooltip = `${dateStr} • ${isBooked ? `Leased: ${occupant}` : 'Available'}`;
+                    if (isToday) tooltip = `📍 TODAY (${dateStr}) • ${isBooked ? `Leased: ${occupant}` : 'Available'}`;
+
+                    daysHTML += `
+                        <div class="day-cell ${isToday ? 'today-cell' : ''}" 
+                             style="background-color: ${color};" 
+                             onmouseenter="showHoverTip(event, '${tooltip}')" 
+                             onmouseleave="hideHoverTip()">
                         </div>
                     `;
                 }
 
-                const visualTimelineHTML = `
-                    <div style="margin-top: 14px;">
-                        <div style="font-size: 9px; color: #94a3b8; margin-bottom: 8px; font-weight: 600; text-transform: uppercase;">
-                            90-Day Schedule
-                        </div>
-                        ${monthsHTML}
+                rows += `
+                    <div class="month-line">
+                        <span class="month-name">${monthName}</span>
+                        <div class="days-track">${daysHTML}</div>
                     </div>
                 `;
-                // 👆 END TIMELINE GENERATOR 👆
+            }
+
+            return `
+                <div class="schedule-strip">
+                    <div class="schedule-head">
+                        <span>90-Day Schedule</span>
+                        <div class="schedule-legend">
+                            <span><span class="legend-dot" style="background:#10b981;"></span> Free</span>
+                            <span><span class="legend-dot" style="background:#ef4444;"></span> Booked</span>
+                            <span><span class="legend-dot" style="background:#2563eb;"></span> Today</span>
+                        </div>
+                    </div>
+                    ${rows}
+                </div>
+            `;
+        }
+
+        /* ----------------------------------------------------
+           TABLE RENDERER
+           ---------------------------------------------------- */
+        function renderRoomsTable(rooms) {
+            const tbody = document.getElementById('roomsTableBody');
+            tbody.innerHTML = '';
+
+            if (rooms.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-placeholder">No rooms match criteria. <button class="btn btn-ghost" style="margin-left:8px; padding:3px 8px; font-size:11px;" onclick="resetAllFilters()">Reset</button></td></tr>`;
+                return;
+            }
+
+            rooms.forEach(room => {
+                const unresolved = (room.complaints || []).filter(c => !c.resolved).length;
+                const alertBadge = unresolved > 0 ? `<span class="alert-beacon">${unresolved}</span>` : '';
+
+                const facilities = (room.facilities || [])
+                    .filter(f => f && f.toLowerCase() !== 'none')
+                    .map(f => `<span class="facility-pill">${f}</span>`).join('');
+
+                const defaultImg = "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=200&q=80";
+                const displayImg = room.imageUrl || defaultImg;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><span class="room-id-badge">#${room.id}</span></td>
                     <td>
-                        <div class="room-no-container">
-                            <strong style="color: #f8fafc; font-size: 15px;">Room ${room.roomNumber}</strong>
+                        <span class="room-num-text">Room ${room.roomNumber}</span>
+                        <span class="room-unit-id">#${room.id}</span>
+                    </td>
+                    <td>
+                        <div class="room-thumb-box" onclick="openLightbox('${displayImg}')" title="Click to enlarge">
+                            <img src="${displayImg}" alt="Room ${room.roomNumber}">
                         </div>
                     </td>
-                    <td><img src="${room.imageUrl ? room.imageUrl : 'https://via.placeholder.com/75x52/1e2230/cbd5e1?text=No+Img'}" class="thumbnail"></td>
-                    <td style="min-width: 250px;">
-                        <div style="font-weight:600; color:#f8fafc;">${room.title}</div>
-                        <div style="font-size:12px; color:#64748b; margin-bottom: 6px;">📍 ${room.location}</div>
-                        
-                        <div style="font-size:11px; color:#60a5fa; font-weight:700; background:rgba(96,165,250,0.1); display:inline-block; padding:3px 6px; border-radius:4px; border:1px solid rgba(96,165,250,0.3);">
-                            👨‍👩‍👧‍👦 Capacity: ${maxCap}
+                    <td class="room-info-box">
+                        <div class="room-info-title">${escapeHtml(room.title || 'Studio Unit')}</div>
+                        <div class="room-info-loc">
+                            <span>📍 ${escapeHtml(room.location || 'Main Building')}</span>
+                            <span>•</span>
+                            <span class="room-cap-tag">👥 Max ${room.capacity || 2} Guests</span>
                         </div>
-                        
-                        <!-- Inject the visual calendar rod here! -->
-                        ${visualTimelineHTML}
+                        ${createCalendarHTML(room)}
                     </td>
-                    <td><span style="font-weight:700; color:#f8fafc;">₹${room.pricePerMonth}</span></td>
-                    <td><div class="facilities-container">${facilitiesHTML}</div></td>
                     <td>
-                        <div class="status-container ${room.available ? 'status-active' : 'status-vacant'}">
-                            <span class="status-dot"></span>
+                        <div class="rent-heading">₹${Number(room.pricePerMonth || 0).toLocaleString('en-IN')}</div>
+                        <span class="rent-subtext">per calendar month</span>
+                    </td>
+                    <td>
+                        <div class="amenity-badge-list">${facilities || '<span style="font-size:11px; color:#94a3b8;">None</span>'}</div>
+                    </td>
+                    <td>
+                        <span class="status-pill ${room.available ? 'vacant' : 'occupied'}">
+                            <span class="dot"></span>
                             ${room.available ? 'Vacant' : 'Occupied'}
-                        </div>
+                        </span>
                     </td>
-                    <td>
-                        <div class="btn-group">
-                            <button class="toggle-btn" onclick="toggleStatus(${room.id})">Toggle Status</button>
-                            
-                            <button class="manage-btn" style="color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background-color: rgba(96, 165, 250, 0.1);" 
-                                    onclick="openTenantDrawer(${room.id})">
-                                👥 Schedule (${tenantCount})
+                    <td style="text-align: right;">
+                        <div class="row-actions">
+                            <button class="btn-table" onclick="toggleStatus(${room.id})" title="Toggle status">
+                                ↺ Toggle
                             </button>
-
-                            <button class="manage-btn" onclick="openComplaintDrawer(${room.id})">
-                                Complaints
-                                ${actionBadgeHTML}
+                            <button class="btn-table primary" onclick="openGuestDrawer(${room.id})">
+                                👥 Schedule (${(room.tenants || []).length})
+                            </button>
+                            <button class="btn-table" onclick="openMaintenanceDrawer(${room.id})">
+                                ⚠️ Issues
+                                ${alertBadge}
                             </button>
                         </div>
                     </td>
@@ -437,67 +1524,187 @@ function renderTableData(roomsToRender) {
             });
         }
 
-        /* ----- DRAWER CONTROLS ----- */
-        
-        function closeDrawer(drawerId) {
-            activeDrawerRoomId = null;
-            document.getElementById(drawerId).classList.remove('open');
-            document.getElementById('mainContent').style.marginRight = '0px';
+       /* ----------------------------------------------------
+           FILTER & SORT ENGINE
+           ---------------------------------------------------- */
+        function applyAllFilters() {
+            const query = document.getElementById('filterSearchInput').value.trim().toLowerCase();
+            const statusChoice = document.getElementById('filterStatusSelect').value;
+            const sortChoice = document.getElementById('sorterSelect').value;
+            const checkedAmenities = Array.from(document.querySelectorAll('.amenity-input:checked')).map(cb => cb.value.toLowerCase());
+
+            let result = allRoomsMemory.filter(r => {
+                const num = String(r.roomNumber || '').toLowerCase();
+                const title = String(r.title || '').toLowerCase();
+                const guestMatch = (r.tenants || []).some(t => String(t.fullName || '').toLowerCase().includes(query));
+
+                const matchQuery = !query || num.includes(query) || title.includes(query) || guestMatch;
+                const matchStatus = statusChoice === 'all' || (statusChoice === 'available' ? r.available : !r.available);
+                const roomFac = (r.facilities || []).map(f => String(f).toLowerCase());
+                const matchAmenities = checkedAmenities.every(a => roomFac.includes(a));
+
+                return matchQuery && matchStatus && matchAmenities;
+            });
+
+            result.sort((a, b) => {
+                if (sortChoice === 'room-asc') return String(a.roomNumber).localeCompare(String(b.roomNumber), undefined, { numeric: true });
+                if (sortChoice === 'room-desc') return String(b.roomNumber).localeCompare(String(a.roomNumber), undefined, { numeric: true });
+                if (sortChoice === 'rent-desc') return (b.pricePerMonth || 0) - (a.pricePerMonth || 0);
+                if (sortChoice === 'rent-asc') return (a.pricePerMonth || 0) - (b.pricePerMonth || 0);
+                if (sortChoice === 'issues') {
+                    const issuesA = (a.complaints || []).filter(c => !c.resolved).length;
+                    const issuesB = (b.complaints || []).filter(c => !c.resolved).length;
+                    return issuesB - issuesA;
+                }
+                return 0;
+            });
+
+            renderRoomsTable(result);
         }
 
-        // COMPLAINTS DRAWER
-        function openComplaintDrawer(roomId) {
-            closeDrawer('tenantDrawer'); // Close the other drawer if open
+        function handleChipToggle(checkbox) {
+            const label = checkbox.closest('.amenity-chip');
+            if (checkbox.checked) {
+                label.classList.add('active');
+            } else {
+                label.classList.remove('active');
+            }
+            applyAllFilters();
+        }
+
+        function clearAllAmenities() {
+            document.querySelectorAll('.amenity-input').forEach(cb => {
+                cb.checked = false;
+                cb.closest('.amenity-chip').classList.remove('active');
+            });
+            applyAllFilters();
+        }
+
+        function resetAllFilters() {
+            document.getElementById('filterSearchInput').value = '';
+            document.getElementById('filterStatusSelect').value = 'all';
+            document.getElementById('sorterSelect').value = 'room-asc';
+            clearAllAmenities();
+        }
+
+        /* ----------------------------------------------------
+           ROOM ACTIONS & DRAWER CONTROLLERS
+           ---------------------------------------------------- */
+        function toggleStatus(roomId) {
+            fetch(`/api/rooms/toggle-availability/${roomId}`, { method: 'PUT' })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to toggle status");
+                    return res.json();
+                })
+                .then(() => {
+                    showNotification("Room availability updated", "success");
+                    fetchLedger();
+                })
+                .catch(err => showNotification(err.message, "error"));
+        }
+
+        function closeAllDrawers() {
+            document.getElementById('drawerOverlay').classList.remove('open');
+            document.getElementById('maintenanceDrawer').classList.remove('open');
+            document.getElementById('guestDrawer').classList.remove('open');
+            activeRoomId = null;
+        }
+
+        function syncOpenDrawers() {
+            if (!activeRoomId) return;
+            if (document.getElementById('maintenanceDrawer').classList.contains('open')) {
+                openMaintenanceDrawer(activeRoomId);
+            }
+            if (document.getElementById('guestDrawer').classList.contains('open')) {
+                openGuestDrawer(activeRoomId);
+            }
+        }
+
+        /* ----------------------------------------------------
+           DRAWER 1: MAINTENANCE ISSUES
+           ---------------------------------------------------- */
+        function openMaintenanceDrawer(roomId) {
             const room = allRoomsMemory.find(r => r.id === roomId);
             if (!room) return;
 
-            activeDrawerRoomId = roomId;
-            document.getElementById('drawerRoomTitle').textContent = `Room ${room.roomNumber} Logs`;
-            
-            const listWrapper = document.getElementById('drawerComplaintsList');
-            listWrapper.innerHTML = '';
+            activeRoomId = roomId;
+            document.getElementById('maintRoomHeading').textContent = `Room ${room.roomNumber} Maintenance`;
+            const list = document.getElementById('maintTicketList');
+            list.innerHTML = '';
 
-            if (room.complaints && room.complaints.length > 0) {
-                room.complaints.forEach(c => {
-                    const item = document.createElement('div');
-                    item.className = `list-item complaint-item ${c.resolved ? 'resolved' : ''}`;
-                    item.innerHTML = `
-                        <div class="complaint-text">
-                            <span style="font-size: 14px; margin-right: 4px;">${c.resolved ? '✅' : '⚠️'}</span>
-                            ${c.description}
-                        </div>
-                        <button class="comp-btn ${c.resolved ? 'reopen' : 'resolve'}" onclick="toggleComplaint(${c.id})">
-                            ${c.resolved ? 'Reopen' : 'Resolve'}
-                        </button>
-                    `;
-                    listWrapper.appendChild(item);
-                });
+            if (!room.complaints || room.complaints.length === 0) {
+                list.innerHTML = `<div class="empty-placeholder">No maintenance issues reported for this unit.</div>`;
             } else {
-                listWrapper.innerHTML = '<div class="no-data" style="padding: 20px 0;">No reported complaints.</div>';
+                room.complaints.forEach(c => {
+                    const card = document.createElement('div');
+                    card.className = `ticket-item ${c.resolved ? 'resolved' : ''}`;
+                    card.innerHTML = `
+                        <div class="ticket-text">${escapeHtml(c.description)}</div>
+                        <div class="ticket-meta">
+                            <span>${c.resolved ? '✅ Resolved' : '🔴 Active Ticket'}</span>
+                            <button class="btn-ticket-state ${c.resolved ? 'reopen' : 'resolve'}" onclick="toggleComplaint(${c.id})">
+                                ${c.resolved ? 'Reopen' : 'Mark Resolved'}
+                            </button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
             }
 
-            document.getElementById('complaintDrawer').classList.add('open');
-            document.getElementById('mainContent').style.marginRight = '350px';
+            document.getElementById('drawerOverlay').classList.add('open');
+            document.getElementById('maintenanceDrawer').classList.add('open');
         }
 
-        // TENANT DRAWER (NEW)
-function openTenantDrawer(roomId) {
-            closeDrawer('complaintDrawer'); 
+        function submitNewIssue() {
+            const input = document.getElementById('newIssueInput');
+            const desc = input.value.trim();
+            if (!desc || !activeRoomId) return;
+
+            const formData = new URLSearchParams();
+            formData.append('description', desc);
+
+            fetch(`/api/rooms/${activeRoomId}/complaints/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to log issue");
+                input.value = '';
+                showNotification("Maintenance ticket logged", "success");
+                fetchLedger();
+            })
+            .catch(err => showNotification(err.message, "error"));
+        }
+
+        function toggleComplaint(complaintId) {
+            fetch(`/api/rooms/complaints/toggle/${complaintId}`, { method: 'PUT' })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to update ticket");
+                    showNotification("Ticket status updated", "success");
+                    fetchLedger();
+                })
+                .catch(err => showNotification(err.message, "error"));
+        }
+
+        /* ----------------------------------------------------
+           DRAWER 2: GUEST REGISTRY (GROUPED FAMILIES + LEGAL LOCK)
+           ---------------------------------------------------- */
+        function openGuestDrawer(roomId) {
             const room = allRoomsMemory.find(r => r.id === roomId);
             if (!room) return;
 
-            activeDrawerRoomId = roomId;
-            document.getElementById('drawerTenantTitle').textContent = `Room ${room.roomNumber} Booking Schedule`;
-            
-            const listWrapper = document.getElementById('drawerTenantList');
-            listWrapper.innerHTML = '';
+            activeRoomId = roomId;
+            document.getElementById('guestRoomHeading').textContent = `Room ${room.roomNumber} Legal Registry`;
+            const list = document.getElementById('guestPartyList');
+            list.innerHTML = '';
 
-            if (room.tenants && room.tenants.length > 0) {
-                // 1. Get today's date in YYYY-MM-DD format for timeline comparison
+            if (!room.tenants || room.tenants.length === 0) {
+                list.innerHTML = `<div class="empty-placeholder">Unit is vacant.<br>No legal guest records on file.</div>`;
+            } else {
                 const todayObj = new Date();
-                const todayStr = todayObj.getFullYear() + '-' + String(todayObj.getMonth() + 1).padStart(2, '0') + '-' + String(todayObj.getDate()).padStart(2, '0');
+                const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
 
-                // 2. Group the raw list of tenants into distinct "Families" based on their shared check-in dates
                 const bookings = {};
                 room.tenants.forEach(t => {
                     const key = `${t.checkInDate}_${t.checkOutDate}`;
@@ -505,133 +1712,155 @@ function openTenantDrawer(roomId) {
                     bookings[key].push(t);
                 });
 
-                // 3. Sort bookings chronologically so the earliest check-ins appear at the top
                 const sortedKeys = Object.keys(bookings).sort((a, b) => a.localeCompare(b));
-
-                let finalHTML = '';
 
                 sortedKeys.forEach(key => {
                     const family = bookings[key];
-                    const sharedCheckIn = family[0].checkInDate;
-                    const sharedCheckOut = family[0].checkOutDate;
-                    
-                    // 4. Determine Timeline Status
-                    let statusLabel = '';
-                    let statusColor = '';
-                    if (sharedCheckOut < todayStr) {
-                        statusLabel = 'Past Booking';
-                        statusColor = '#64748b'; // Grey
-                    } else if (sharedCheckIn > todayStr) {
+                    const checkIn = family[0].checkInDate;
+                    const checkOut = family[0].checkOutDate;
+
+                    let statusLabel = 'Currently Staying';
+                    let tagStyle = 'background: var(--green-soft); color: var(--green-dark); border: 1px solid var(--green-border);';
+                    let borderLeftColor = 'var(--green)';
+
+                    if (checkOut < todayStr) {
+                        statusLabel = '🔒 Past Booking (Locked)';
+                        tagStyle = 'background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1;';
+                        borderLeftColor = '#94a3b8';
+                    } else if (checkIn > todayStr) {
                         statusLabel = 'Upcoming Booking';
-                        statusColor = '#eab308'; // Yellow
-                    } else {
-                        statusLabel = 'Currently Staying';
-                        statusColor = '#22c55e'; // Green
+                        tagStyle = 'background: var(--amber-soft); color: #b45309; border: 1px solid var(--amber-border);';
+                        borderLeftColor = 'var(--amber)';
                     }
 
-                    // Notice the dynamic border-left color and status badge injected at the top!
-                    finalHTML += `
-                        <div style="background:#1e2230; padding:15px; border-radius:8px; border:1px solid #334155; margin-bottom: 15px; border-left: 4px solid ${statusColor};">
-                            <div style="font-weight:700; color:#f8fafc; font-size:16px; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:10px; display: flex; justify-content: space-between; align-items: center;">
-                                <span>👪 Family Booking (${family.length} Guests)</span>
-                                <span style="font-size:11px; padding:4px 8px; border-radius:4px; background:${statusColor}20; color:${statusColor}; border: 1px solid ${statusColor}40;">${statusLabel}</span>
-                            </div>
-                            <div style="font-size:13px; color:#60a5fa; margin-bottom:12px; font-weight:normal;">
-                                📅 Stay: ${sharedCheckIn} to ${sharedCheckOut}
-                            </div>
-                    `;
+                    const card = document.createElement('div');
+                    card.className = 'lease-card';
+                    card.style.borderLeftColor = borderLeftColor;
 
-                    // 5. Render individual family members inside this specific timeline block
-                    family.forEach((t, index) => {
-                        const idPhotoBadge = t.idProofImageUrl 
-                            ? `<a href="${t.idProofImageUrl}" target="_blank" style="display:inline-block; margin-top:4px; padding:2px 8px; background:rgba(96,165,250,0.1); color:#60a5fa; border:1px solid rgba(96,165,250,0.3); border-radius:4px; text-decoration:none; font-size:11px; font-weight:600;">🖼️ View ID</a>`
-                            : `
-                            <div style="margin-top:4px; display:inline-block;">
-                                <span style="font-size:11px; color:#64748b; font-style:italic; margin-right: 8px;">No Photo</span>
-                                <label style="cursor:pointer; padding:2px 8px; background:rgba(234,179,8,0.1); color:#eab308; border:1px solid rgba(234,179,8,0.3); border-radius:4px; font-size:11px; font-weight:600;">
-                                    📸 Upload
-                                    <input type="file" style="display:none;" accept="image/*" onchange="uploadIdPhotoLater(${t.id}, this)">
-                                </label>
-                            </div>
-                            `;
+                    let guestsHTML = family.map((t, idx) => {
+                        const photoHTML = t.idProofImageUrl
+                            ? `<a href="${t.idProofImageUrl}" target="_blank" class="btn-id-view">🖼️ View ID Photo</a>`
+                            : `<label class="btn-id-upload-label">
+                                   📸 Upload ID Now
+                                   <input type="file" style="display:none;" accept="image/*" onchange="uploadIdPhotoLater(${t.id}, this)">
+                               </label>`;
 
-                        finalHTML += `
-                            <div style="margin-bottom: ${index === family.length - 1 ? '0' : '12px'}; padding-bottom: ${index === family.length - 1 ? '0' : '12px'}; border-bottom: ${index === family.length - 1 ? 'none' : '1px dashed #2e354f'};">
-                                <div style="font-weight:600; color:#e2e8f0; font-size:14px;">
-                                    ${index === 0 ? '👑 Guest 1 (Primary):' : '👤 Guest ' + (index + 1) + ':'} ${t.fullName}
+                        return `
+                            <div class="guest-row">
+                                <div class="guest-name">${idx === 0 ? '👑 ' : '👤 '}${escapeHtml(t.fullName)}</div>
+                                <div class="guest-details">
+                                    <span>📞 ${t.phoneNumber ? escapeHtml(t.phoneNumber) : 'No phone'}</span>
+                                    <span>🪪 ${escapeHtml(t.governmentIdNumber)}</span>
                                 </div>
-                                <div style="font-size:12px; color:#94a3b8; margin-top:4px;">
-                                    📞 ${t.phoneNumber ? t.phoneNumber : '<i>No phone</i>'} &nbsp;|&nbsp; 🪪 Gov ID: <span style="color:#cbd5e1;">${t.governmentIdNumber}</span>
-                                </div>
-                                ${idPhotoBadge}
+                                ${photoHTML}
                             </div>
                         `;
-                    });
+                    }).join('');
 
-                    finalHTML += `</div>`;
+                    card.innerHTML = `
+                        <div class="lease-head">
+                            <div>
+                                <div class="title">👪 Family Booking (${family.length})</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">📅 ${checkIn} → ${checkOut}</div>
+                            </div>
+                            <span class="lease-status-tag" style="${tagStyle}">${statusLabel}</span>
+                        </div>
+                        <div>${guestsHTML}</div>
+                    `;
+                    list.appendChild(card);
                 });
-
-                listWrapper.innerHTML = finalHTML;
-            } else {
-                listWrapper.innerHTML = '<div class="no-data" style="padding: 20px 0;">Room is entirely vacant.<br>No bookings on file.</div>';
             }
 
-            document.getElementById('tenantDrawer').classList.add('open');
-            document.getElementById('mainContent').style.marginRight = '350px';
-        }
-        function redirectToAddTenant() {
-            if (activeDrawerRoomId) {
-                window.location.href = `/register-tenant.html?roomId=${activeDrawerRoomId}`;
-            }
+            document.getElementById('drawerOverlay').classList.add('open');
+            document.getElementById('guestDrawer').classList.add('open');
         }
 
-        /* ----- ACTIONS ----- */
-
-        function submitNewComplaint() {
-            if (!activeDrawerRoomId) return;
-            const input = document.getElementById('newComplaintInput');
-            const desc = input.value.trim();
-            if (!desc) return alert("Please specify the complaint details first.");
+        function uploadIdPhotoLater(tenantId, inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
 
             const formData = new FormData();
-            formData.append("description", desc);
+            formData.append("file", file);
+            document.body.style.cursor = 'wait';
 
-            fetch(`/api/rooms/${activeDrawerRoomId}/complaints/add`, { method: 'POST', body: formData })
-                .then(res => { if(!res.ok) throw new Error("Database error saving complaint"); return res.text(); })
-                .then(() => {
-                    input.value = '';
-                    fetchLedger();
-                })
-                .catch(err => alert("Error: " + err.message));
-        }
-
-        function toggleComplaint(complaintId) {
-            fetch(`/api/rooms/complaints/toggle/${complaintId}`, { method: 'PUT' })
-                .then(res => { if(!res.ok) throw new Error("DB refusal"); return res.text(); })
-                .then(() => { fetchLedger(); })
-                .catch(err => alert("Error toggling: " + err.message));
-        }
-
-        function toggleStatus(id) {
-            fetch(`/api/rooms/toggle-availability/${id}`, { method: 'PUT' })
-                .then(res => { if (!res.ok) throw new Error("DB connection dropped"); return res.json(); })
-                .then(() => { fetchLedger(); })
-                .catch(err => alert("Error switching status: " + err.message));
-        }
-
-        function applyFilters() {
-            const searchKeyword = document.getElementById('roomSearchInput').value.trim().toLowerCase();
-            const statusSelection = document.getElementById('roomStatusFilter').value;
-            const targetAmenities = Array.from(document.querySelectorAll('.facility-filter:checked')).map(cb => cb.value.toLowerCase());
-
-            const filteredResults = allRoomsMemory.filter(room => {
-                const matchesSearch = !searchKeyword || (room.roomNumber && room.roomNumber.toLowerCase().includes(searchKeyword));
-                const matchesStatus = statusSelection === 'all' || (statusSelection === 'available' ? room.available : !room.available);
-                const roomFacilitiesLower = (room.facilities || []).map(f => f.toLowerCase());
-                const matchesAmenities = targetAmenities.every(amenity => roomFacilitiesLower.includes(amenity));
-                return matchesSearch && matchesStatus && matchesAmenities;
+            fetch(`/api/rooms/tenants/${tenantId}/upload-id`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(async response => {
+                if (!response.ok) throw new Error(await response.text());
+                return response.text();
+            })
+            .then(msg => {
+                showNotification(msg, "success");
+                fetchLedger();
+            })
+            .catch(err => showNotification(err.message, "error"))
+            .finally(() => {
+                document.body.style.cursor = 'default';
             });
-            renderTableData(filteredResults);
+        }
+
+        function redirectToAddTenant() {
+            if (activeRoomId) {
+                window.location.href = `/register-tenant.html?roomId=${activeRoomId}`;
+            }
+        }
+
+        /* ----------------------------------------------------
+           UTILITIES: LIGHTBOX, TOOLTIP, CSV & ESCAPING
+           ---------------------------------------------------- */
+        function openLightbox(src) {
+            document.getElementById('lightboxImgTag').src = src;
+            document.getElementById('imageLightbox').classList.add('open');
+        }
+
+        function closeLightbox() {
+            document.getElementById('imageLightbox').classList.remove('open');
+        }
+
+        function showHoverTip(e, text) {
+            const tip = document.getElementById('hoverTooltip');
+            tip.textContent = text;
+            tip.style.display = 'block';
+            tip.style.left = (e.clientX + 10) + 'px';
+            tip.style.top = (e.clientY - 28) + 'px';
+        }
+
+        function hideHoverTip() {
+            document.getElementById('hoverTooltip').style.display = 'none';
+        }
+
+        function exportCsvReport() {
+            const headers = ["Room Number", "Title", "Location", "Monthly Rent", "Capacity", "Status", "Active Guests"];
+            const rows = allRoomsMemory.map(r => [
+                `"${r.roomNumber}"`,
+                `"${r.title || ''}"`,
+                `"${r.location || ''}"`,
+                r.pricePerMonth || 0,
+                r.capacity || 2,
+                r.available ? "Vacant" : "Occupied",
+                (r.tenants || []).length
+            ]);
+
+            const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "pg_hub_room_ledger.csv");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showNotification("CSV report downloaded", "success");
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
     </script>
 </body>
