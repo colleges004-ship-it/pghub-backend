@@ -29,7 +29,7 @@ public class PgRoom {
 
     private String title;
     private String location;
-    private Double pricePerMonth;
+    private Double pricePerDay;
     private Integer capacity = 2;
     private String imageUrl;
     private boolean available=true;
@@ -60,11 +60,11 @@ public class PgRoom {
 
     public PgRoom(){}
 
-    public PgRoom( String roomNumber, String title, String location, Double pricePerMonth, String imageUrl, List<String> facilities){
+    public PgRoom( String roomNumber, String title, String location, Double pricePerDay, String imageUrl, List<String> facilities){
         this.roomNumber=roomNumber;
         this.title=title;
         this.location=location;
-        this.pricePerMonth=pricePerMonth;
+        this.pricePerDay=pricePerDay;
         this.imageUrl=imageUrl;
         this.facilities=facilities;
         this.available=true;
@@ -82,8 +82,8 @@ public class PgRoom {
     public String getLocation(){ return location;}
     public void setLocation( String location){ this.location=location;}
 
-    public Double getPricePerMonth(){ return pricePerMonth;}
-    public void setPricePerMonth( Double pricePerMonth){this.pricePerMonth=pricePerMonth;}
+    public Double getPricePerDay(){ return pricePerDay;}
+    public void setPricePerDay( Double pricePerDay){this.pricePerDay=pricePerDay;}
 
     public Integer getCapacity() {return capacity;}
     public void setCapacity(Integer capacity) { this.capacity = capacity; }

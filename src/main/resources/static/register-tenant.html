@@ -394,6 +394,31 @@
         }
 
         /* ----------------------------------------------------
+           LIVE STAY BILLING SUMMARY
+           ---------------------------------------------------- */
+        .stay-summary-box {
+            display: none;
+            background: var(--green-soft);
+            border: 1px solid var(--green-border);
+            color: var(--text-main);
+            padding: 13px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-bottom: 18px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .stay-summary-total {
+            font-family: var(--font-head);
+            font-weight: 800;
+            color: var(--green-dark);
+            font-size: 15px;
+        }
+
+        /* ----------------------------------------------------
            5. ACTION BUTTONS
            ---------------------------------------------------- */
         .btn-add {
@@ -512,9 +537,9 @@
                 <div class="title-block">
                     <h1>
                         Legal Guest Registry
-                        <span class="compliance-tag">Compliance Terminal</span>
+                        <span class="compliance-tag">Daily Booking</span>
                     </h1>
-                    <p>Register lawful tenants, lease dates, and government identities</p>
+                    <p>Register lawful tenants, stay dates, and government identities</p>
                 </div>
             </div>
             <a href="/dashboard.html" class="back-btn">
@@ -527,7 +552,7 @@
             <div class="panel-header">
                 <h2><span>👥</span> Register Family / Group</h2>
                 <div class="capacity-badge" id="capacityBadge">
-                    <span>⏳</span> Loading Capacity...
+                    <span>⏳</span> Loading Room Details...
                 </div>
             </div>
 
@@ -544,6 +569,16 @@
                 <!-- Dynamic container for Guest 1 + dependents -->
                 <div id="guestsContainer"></div>
 
+                <!-- Live Daily Rate × Days Summary -->
+                <div id="staySummaryBox" class="stay-summary-box">
+                    <span>
+                        <strong>Stay Billing:</strong> <span id="stayDaysText">0</span> day(s) × ₹<span id="dailyRateText">0</span>/day
+                    </span>
+                    <span class="stay-summary-total">
+                        Total: ₹<span id="stayTotalText">0</span>
+                    </span>
+                </div>
+
                 <button type="button" id="addGuestBtn" class="btn-add" style="display: none;">
                     <span>＋</span> Add Family Member
                 </button>
@@ -555,8 +590,9 @@
         </section>
     </div>
 
-<script>
+    <script>
         let roomMaxCapacity = 1;
+        let roomPricePerDay = 0;
         let currentGuestCount = 0;
 
         const guestsContainer = document.getElementById('guestsContainer');
@@ -581,7 +617,24 @@
             }, 3200);
         }
 
-        function loadRoomCapacity(targetId, isInitialLoad = false) {
+        function updateStayCost() {
+            const inVal = document.querySelector('.checkIn')?.value;
+            const outVal = document.querySelector('.checkOut')?.value;
+            const summaryBox = document.getElementById('staySummaryBox');
+
+            if (inVal && outVal && outVal > inVal && roomPricePerDay > 0) {
+                const diffMs = new Date(outVal) - new Date(inVal);
+                const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
+                document.getElementById('stayDaysText').textContent = days;
+                document.getElementById('dailyRateText').textContent = roomPricePerDay.toLocaleString('en-IN');
+                document.getElementById('stayTotalText').textContent = (days * roomPricePerDay).toLocaleString('en-IN');
+                summaryBox.style.display = 'flex';
+            } else {
+                summaryBox.style.display = 'none';
+            }
+        }
+
+        function loadRoomDetails(targetId, isInitialLoad = false) {
             fetch('/api/rooms/all')
                 .then(res => {
                     if (!res.ok) throw new Error("HTTP " + res.status);
@@ -591,9 +644,12 @@
                     const room = rooms.find(r => String(r.id) === String(targetId));
                     if (room) {
                         roomMaxCapacity = room.capacity || 2;
-                        document.getElementById('capacityBadge').innerHTML = `<span>👥</span> Room ${room.roomNumber} (Max ${roomMaxCapacity} Guests)`;
+                        roomPricePerDay = room.pricePerDay || 0;
+                        document.getElementById('capacityBadge').innerHTML =
+                            `<span>👥</span> Room ${room.roomNumber} • Max ${roomMaxCapacity} • ₹${roomPricePerDay}/day`;
                         addGuestBtn.style.display = 'inline-flex';
                         checkButtonVisibility();
+                        updateStayCost();
                     } else {
                         document.getElementById('capacityBadge').textContent = "Room Not Found in Ledger";
                         addGuestBtn.style.display = 'none';
@@ -613,12 +669,12 @@
         if (passedRoomId) {
             roomInput.value = passedRoomId;
             roomInput.readOnly = true;
-            loadRoomCapacity(passedRoomId, true);
+            loadRoomDetails(passedRoomId, true);
         } else {
             document.getElementById('capacityBadge').innerHTML = `<span>📝</span> Manual Room Entry`;
             appendGuestBlock();
             roomInput.addEventListener('change', () => {
-                if (roomInput.value) loadRoomCapacity(roomInput.value, false);
+                if (roomInput.value) loadRoomDetails(roomInput.value, false);
             });
         }
 
@@ -680,11 +736,11 @@
                 <div class="form-row" style="margin-bottom: 0;">
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>Check-In Date</label>
-                        <input type="date" class="checkIn" min="${minDateStr}" required>
+                        <input type="date" class="checkIn" min="${minDateStr}" onchange="updateStayCost()" required>
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>Expected Check-Out</label>
-                        <input type="date" class="checkOut" min="${minDateStr}" required>
+                        <input type="date" class="checkOut" min="${minDateStr}" onchange="updateStayCost()" required>
                     </div>
                 </div>` : ''} 
             `;
@@ -729,7 +785,6 @@
             const primaryCheckIn = primaryCheckInInput ? primaryCheckInInput.value : '';
             const primaryCheckOut = primaryCheckOutInput ? primaryCheckOutInput.value : '';
 
-            // Fixed: Check-out must be strictly after check-in (<=)
             if (primaryCheckIn && primaryCheckOut && primaryCheckOut <= primaryCheckIn) {
                 showNotification("Check-out date must be at least one day after check-in date", "error");
                 return;
@@ -757,6 +812,7 @@
             formData.append('familyData', JSON.stringify(familyMembers));
 
             const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
             submitBtn.style.opacity = '0.8';
             submitBtn.innerHTML = '<span>⏳ Submitting Registration...</span>';
 
@@ -778,6 +834,7 @@
                 }, 1000);
             })
             .catch(err => {
+                submitBtn.disabled = false;
                 submitBtn.style.opacity = '1';
                 submitBtn.innerHTML = '<span>✓ Confirm & Register Tenants</span>';
                 showNotification("Error: " + err.message, "error");

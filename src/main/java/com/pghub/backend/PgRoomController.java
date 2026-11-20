@@ -24,6 +24,11 @@ import java.util.UUID;
 @RequestMapping("/api/rooms")
 @CrossOrigin(origins = "*")
 public class PgRoomController {
+    @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
+    private DailyPaymentRepository dailyPaymentRepository;
 
     @Autowired
     private PgRoomRepository roomRepository;
@@ -31,8 +36,7 @@ public class PgRoomController {
     @Autowired
     private ComplaintRepository complaintRepository;
 
-    @Autowired
-    private TenantRepository tenantRepository;
+
 
     private static final String UPLOAD_DIR = Paths.get("uploads").toAbsolutePath().toString() + File.separator;
 
@@ -40,7 +44,7 @@ public class PgRoomController {
     public ResponseEntity<?> addRoom(@RequestParam("roomNumber") String roomNumber,
                                      @RequestParam("title") String title,
                                      @RequestParam("location") String location,
-                                     @RequestParam("pricePerMonth") Double pricePerMonth,
+                                     @RequestParam("pricePerDay") Double pricePerDay,
                                      @RequestParam(value = "capacity", defaultValue = "2") Integer capacity,
                                      @RequestParam("image") MultipartFile file,
                                      @RequestParam(value = "facilities", required = false) List<String> facilities) throws IOException { 
@@ -62,7 +66,7 @@ public class PgRoomController {
 
         List<String> finalFacilities = (facilities == null) ? new java.util.ArrayList<>() : facilities;
         
-        PgRoom newRoom = new PgRoom(roomNumber,title, location, pricePerMonth, imageUrlPath, finalFacilities);
+        PgRoom newRoom = new PgRoom(roomNumber,title, location, pricePerDay, imageUrlPath, finalFacilities);
         newRoom.setCapacity(capacity);
         return ResponseEntity.ok(roomRepository.save(newRoom));
     }    
@@ -104,14 +108,14 @@ public class PgRoomController {
         @RequestParam("roomNumber") String roomNumber,
         @RequestParam("title") String title,
         @RequestParam("location") String location,
-        @RequestParam("pricePerMonth") Double pricePerMonth,
+        @RequestParam("pricePerDay") Double pricePerDay,
         @RequestParam(value = "facilities", required = false) List<String> facilities 
     ) { 
         return roomRepository.findById(id).map(room -> {
             room.setRoomNumber(roomNumber);
             room.setTitle(title);
             room.setLocation(location);
-            room.setPricePerMonth(pricePerMonth);
+            room.setPricePerDay(pricePerDay); // Assuming you meant pricePerDay here, adjust if needed
 
             List<String> finalFacilities = (facilities == null) ? new java.util.ArrayList<>() : facilities;
             room.setFacilities(finalFacilities); 
@@ -168,10 +172,8 @@ public class PgRoomController {
                 java.time.LocalDate newCheckIn= familyMembers.get(0).getCheckInDate();
                 java.time.LocalDate newCheckOut= familyMembers.get(0).getCheckOutDate();
 
-                if (room.getTenants() !=null){
-                    for (Tenant existingTenant : room.getTenants()){
-                        java.time.LocalDate existIn = existingTenant.getCheckInDate();
-                        java.time.LocalDate existOut = existingTenant.getCheckOutDate();
+                if (room.getTenants() !=null){ 
+
                         java.time.LocalDate today = java.time.LocalDate.now();
                         
                         if (newCheckIn.isBefore(today)){
@@ -181,6 +183,9 @@ public class PgRoomController {
                         if (!newCheckOut.isAfter(newCheckIn)){
                             return ResponseEntity.badRequest().body("Check-out date cannot be before check-in date.");
                         }
+                    for (Tenant existingTenant : room.getTenants()){
+                        java.time.LocalDate existIn = existingTenant.getCheckInDate();
+                        java.time.LocalDate existOut = existingTenant.getCheckOutDate();
                         // Check for overlapping dates
 
                        
@@ -194,7 +199,7 @@ public class PgRoomController {
                 }
 
                 
-
+                Tenant primaryTenant = null;
                 for (int i = 0; i < familyMembers.size(); i++) {
                     Tenant tenant = familyMembers.get(i);
 
@@ -218,7 +223,25 @@ public class PgRoomController {
                     }
                     
                     tenant.setPgRoom(room);
-                    tenantRepository.save(tenant);
+
+                    Tenant savedTenant = tenantRepository.save(tenant);
+                    if (i == 0) {
+                        primaryTenant = savedTenant;
+                    }
+                }
+
+                if (primaryTenant != null) {
+                    java.time.LocalDate cursor = newCheckIn;
+                    while (cursor.isBefore(newCheckOut)) {
+                        DailyPayment dp = new DailyPayment();
+                        dp.setRoomId(room.getId());
+                        dp.setTenantId(primaryTenant.getId());
+                        dp.setStayDate(cursor);
+                        dp.setAmount(room.getPricePerDay());
+                        dp.setApproved(false);
+                        dailyPaymentRepository.save(dp);
+                        cursor = cursor.plusDays(1);
+                    }
                 }
                 
                 java.time.LocalDate today= java.time.LocalDate.now();
@@ -269,6 +292,91 @@ public class PgRoomController {
         }).orElse(ResponseEntity.notFound().build());
             
         
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    @DeleteMapping("/{id}/bookings/cancel")
+    public ResponseEntity<?> cancelBooking(
+            @PathVariable Long id,
+            @RequestParam("checkInDate") String checkInStr,
+            @RequestParam("checkOutDate") String checkOutStr) {
+
+        return roomRepository.findById(id).map(room -> {
+            java.time.LocalDate checkIn = java.time.LocalDate.parse(checkInStr);
+            java.time.LocalDate checkOut = java.time.LocalDate.parse(checkOutStr);
+            java.time.LocalDate today = java.time.LocalDate.now();
+
+            // 1. Block cancellation of past completed stays
+            if (checkOut.isBefore(today)) {
+                return ResponseEntity.badRequest()
+                        .body("Cannot cancel a past completed booking.");
+            }
+
+            // Find all family members belonging to this booking interval
+            List<Tenant> bookingTenants = (room.getTenants() == null)
+                    ? java.util.Collections.emptyList()
+                    : room.getTenants().stream()
+                        .filter(t -> checkIn.equals(t.getCheckInDate()) && checkOut.equals(t.getCheckOutDate()))
+                        .toList();
+
+            if (bookingTenants.isEmpty()) {
+                return ResponseEntity.badRequest().body("No matching booking found for those dates.");
+            }
+
+            // Fetch all daily payment rows for this booking's nights
+            List<DailyPayment> bookingPayments = dailyPaymentRepository
+                    .findByRoomIdAndStayDateBetween(room.getId(), checkIn, checkOut.minusDays(1));
+
+            // 2. UPCOMING BOOKING (Has not started yet)
+            if (checkIn.isAfter(today)) {
+                boolean hasApprovedPayment = bookingPayments.stream().anyMatch(DailyPayment::isApproved);
+                if (hasApprovedPayment) {
+                    return ResponseEntity.status(409)
+                            .body("Cannot delete booking: one or more daily payments are already approved & locked.");
+                }
+
+                // Remove unapproved daily payment rows
+                dailyPaymentRepository.deleteAll(bookingPayments);
+
+                // Delete uploaded ID proof files & tenant records
+                for (Tenant t : bookingTenants) {
+                    try {
+                        if (t.getIdProofImageUrl() != null && t.getIdProofImageUrl().startsWith("/uploads/")) {
+                            String fileName = t.getIdProofImageUrl().substring("/uploads/".length());
+                            File file = Paths.get("uploads").resolve(fileName).toFile();
+                            if (file.exists()) file.delete();
+                        }
+                    } catch (Exception ignored) {}
+                }
+                room.getTenants().removeAll(bookingTenants);
+                tenantRepository.deleteAll(bookingTenants);
+
+                return ResponseEntity.ok("Upcoming booking cancelled and dates released.");
+            }
+
+            // 3. ACTIVE STAY (Early Checkout / Mid-stay Cancellation)
+            // Keep past/approved days intact; delete only unapproved days from today onward
+            List<DailyPayment> futureUnapproved = bookingPayments.stream()
+                    .filter(p -> !p.isApproved() && !p.getStayDate().isBefore(today))
+                    .toList();
+            dailyPaymentRepository.deleteAll(futureUnapproved);
+
+            // Truncate checkout date to today so calendar frees remaining days
+            for (Tenant t : bookingTenants) {
+                t.setCheckOutDate(today);
+                tenantRepository.save(t);
+            }
+
+            // Mark room vacant if no other booking covers today
+            boolean stillOccupiedToday = room.getTenants().stream()
+                    .anyMatch(t -> !t.getCheckInDate().isAfter(today) && t.getCheckOutDate().isAfter(today));
+            if (!stillOccupiedToday) {
+                room.setAvailable(true);
+            }
+            roomRepository.save(room);
+
+            return ResponseEntity.ok("Early checkout processed: remaining unapproved days cancelled and room marked vacant.");
+        }).orElse(ResponseEntity.notFound().build());
     }
     
 }

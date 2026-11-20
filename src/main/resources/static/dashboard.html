@@ -514,7 +514,7 @@
 
         .room-thumb-box:hover img { transform: scale(1.08); }
 
-        .room-info-box { min-width: 320px; }
+        .room-info-box { min-width: 300px; }
         .room-info-title {
             font-family: var(--font-head);
             font-size: 14px;
@@ -711,6 +711,14 @@
 
         .btn-table.primary:hover { background: #dbeafe; }
 
+        .btn-table.payments {
+            background: var(--green-soft);
+            border-color: var(--green-border);
+            color: var(--green-dark);
+        }
+
+        .btn-table.payments:hover { background: #d1fae5; }
+
         .alert-beacon {
             position: absolute;
             top: -6px; right: -6px;
@@ -744,8 +752,8 @@
 
         .drawer-panel {
             position: fixed;
-            top: 0; right: -440px;
-            width: 440px; max-width: 100vw; height: 100vh;
+            top: 0; right: -460px;
+            width: 460px; max-width: 100vw; height: 100vh;
             background: #ffffff;
             border-left: 1px solid var(--border);
             box-shadow: var(--shadow-float);
@@ -777,7 +785,7 @@
         .drawer-header p {
             font-size: 12px;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 3px;
         }
 
         .btn-drawer-close {
@@ -792,6 +800,7 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.15s ease;
+            flex-shrink: 0;
         }
 
         .btn-drawer-close:hover { background: var(--bg-hover); color: var(--text-main); }
@@ -854,7 +863,7 @@
             border-color: var(--amber-border);
         }
 
-        /* Lease Card in Guest Drawer */
+        /* Lease Card & Daily Payment Card in Drawers */
         .lease-card {
             background: #ffffff;
             border: 1px solid var(--border);
@@ -870,7 +879,8 @@
         .lease-head {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 8px;
             border-bottom: 1px solid var(--border-light);
             padding-bottom: 8px;
         }
@@ -884,10 +894,11 @@
 
         .lease-status-tag {
             font-size: 10px;
-            font-weight: 600;
-            padding: 2px 7px;
+            font-weight: 700;
+            padding: 3px 8px;
             border-radius: 4px;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .guest-row { padding: 8px 0; border-bottom: 1px dashed var(--border-light); }
@@ -931,6 +942,25 @@
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
+        }
+
+        .payment-audit-box {
+            background: var(--green-soft);
+            border: 1px solid var(--green-border);
+            border-radius: var(--radius-sm);
+            padding: 8px 10px;
+            font-size: 11px;
+            color: var(--text-body);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .payment-controls-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .drawer-footer {
@@ -1078,7 +1108,7 @@
         <div class="stage-hero">
             <div class="stage-titles">
                 <h2>Room Inventory & Availability</h2>
-                <p>Track real-time occupancy, guest lease intervals, and maintenance dispatches.</p>
+                <p>Track real-time occupancy, daily payment approvals, guest lease intervals, and maintenance dispatches.</p>
             </div>
             <div style="display: flex; gap: 10px;">
                 <button class="btn btn-ghost" onclick="exportCsvReport()">
@@ -1169,8 +1199,8 @@
                 <select id="sorterSelect" class="styled-select" onchange="applyAllFilters()">
                     <option value="room-asc">Room Number (Ascending)</option>
                     <option value="room-desc">Room Number (Descending)</option>
-                    <option value="rent-desc">Monthly Rent: High to Low</option>
-                    <option value="rent-asc">Monthly Rent: Low to High</option>
+                    <option value="rent-desc">Daily Tariff: High to Low</option>
+                    <option value="rent-asc">Daily Tariff: Low to High</option>
                     <option value="issues">Most Open Issues</option>
                 </select>
             </div>
@@ -1185,10 +1215,10 @@
                             <th style="width: 100px;">Unit</th>
                             <th style="width: 80px;">Photo</th>
                             <th>Room Details & 90-Day Schedule</th>
-                            <th style="width: 130px;">Monthly Rent</th>
-                            <th style="width: 140px;">Amenities</th>
-                            <th style="width: 120px;">Occupancy</th>
-                            <th style="text-align: right; width: 280px;">Actions</th>
+                            <th style="width: 120px;">Daily Tariff</th>
+                            <th style="width: 130px;">Amenities</th>
+                            <th style="width: 115px;">Occupancy</th>
+                            <th style="text-align: right; width: 340px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="roomsTableBody">
@@ -1241,7 +1271,26 @@
         </div>
     </aside>
 
-    <!-- 8. JAVASCRIPT CONTROLLER -->
+    <!-- 8. DRAWER 3: DAILY PAYMENT APPROVAL LEDGER (IMMUTABLE ONCE APPROVED) -->
+    <aside id="paymentDrawer" class="drawer-panel">
+        <div class="drawer-header">
+            <div>
+                <h3 id="payRoomHeading">Daily Payment Ledger</h3>
+                <p id="paySummarySub">Loading daily billing breakdown...</p>
+            </div>
+            <button class="btn-drawer-close" onclick="closeAllDrawers()">&times;</button>
+        </div>
+
+        <div class="drawer-content" id="dailyPaymentList"></div>
+
+        <div class="drawer-footer">
+            <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                🔒 <strong>Audit Security Policy:</strong> Once a daily payment is approved by the owner, its status, mode, and reference are permanently locked and cannot be edited or reverted.
+            </div>
+        </div>
+    </aside>
+
+    <!-- 9. JAVASCRIPT CONTROLLER -->
     <script>
         let allRoomsMemory = [];
         let activeRoomId = null;
@@ -1292,7 +1341,7 @@
                     roomNumber: "101",
                     title: "Executive Master Suite",
                     location: "1st Floor, East Wing",
-                    pricePerMonth: 18500,
+                    pricePerDay: 950,
                     capacity: 2,
                     available: false,
                     imageUrl: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=300&q=80",
@@ -1302,8 +1351,8 @@
                         { id: 2, description: "Door lock lubricated and serviced", resolved: true, date: "2026-11-10" }
                     ],
                     tenants: [
-                        { id: 201, fullName: "Aarav Sharma", phoneNumber: "+91 98765 43210", governmentIdNumber: "AADHAAR-8921-XXXX", checkInDate: "2026-11-01", checkOutDate: "2026-12-15", idProofImageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" },
-                        { id: 202, fullName: "Priya Sharma", phoneNumber: "+91 98765 43211", governmentIdNumber: "AADHAAR-8922-XXXX", checkInDate: "2026-11-01", checkOutDate: "2026-12-15", idProofImageUrl: "" }
+                        { id: 201, fullName: "Aarav Sharma", phoneNumber: "+91 98765 43210", governmentIdNumber: "ID-8921-XXXX", checkInDate: "2026-11-01", checkOutDate: "2026-12-15", idProofImageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" },
+                        { id: 202, fullName: "Priya Sharma", phoneNumber: "+91 98765 43211", governmentIdNumber: "ID-8922-XXXX", checkInDate: "2026-11-01", checkOutDate: "2026-12-15", idProofImageUrl: "" }
                     ]
                 },
                 {
@@ -1311,7 +1360,7 @@
                     roomNumber: "102",
                     title: "Garden Studio Loft",
                     location: "1st Floor, West Wing",
-                    pricePerMonth: 14000,
+                    pricePerDay: 650,
                     capacity: 2,
                     available: true,
                     imageUrl: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=300&q=80",
@@ -1324,7 +1373,7 @@
                     roomNumber: "201",
                     title: "Penthouse Horizon Suite",
                     location: "2nd Floor, Sky View",
-                    pricePerMonth: 22000,
+                    pricePerDay: 1200,
                     capacity: 1,
                     available: false,
                     imageUrl: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=300&q=80",
@@ -1341,7 +1390,7 @@
                     roomNumber: "202",
                     title: "Standard Single Room",
                     location: "2nd Floor, North Hall",
-                    pricePerMonth: 12500,
+                    pricePerDay: 550,
                     capacity: 1,
                     available: true,
                     imageUrl: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=300&q=80",
@@ -1493,8 +1542,8 @@
                         ${createCalendarHTML(room)}
                     </td>
                     <td>
-                        <div class="rent-heading">₹${Number(room.pricePerMonth || 0).toLocaleString('en-IN')}</div>
-                        <span class="rent-subtext">per calendar month</span>
+                        <div class="rent-heading">₹${Number(room.pricePerDay || 0).toLocaleString('en-IN')}</div>
+                        <span class="rent-subtext">per day</span>
                     </td>
                     <td>
                         <div class="amenity-badge-list">${facilities || '<span style="font-size:11px; color:#94a3b8;">None</span>'}</div>
@@ -1510,6 +1559,9 @@
                             <button class="btn-table" onclick="toggleStatus(${room.id})" title="Toggle status">
                                 ↺ Toggle
                             </button>
+                            <button class="btn-table payments" onclick="openPaymentDrawer(${room.id})" title="Daily payment ledger & approvals">
+                                💳 Payments
+                            </button>
                             <button class="btn-table primary" onclick="openGuestDrawer(${room.id})">
                                 👥 Schedule (${(room.tenants || []).length})
                             </button>
@@ -1524,7 +1576,7 @@
             });
         }
 
-       /* ----------------------------------------------------
+        /* ----------------------------------------------------
            FILTER & SORT ENGINE
            ---------------------------------------------------- */
         function applyAllFilters() {
@@ -1549,8 +1601,8 @@
             result.sort((a, b) => {
                 if (sortChoice === 'room-asc') return String(a.roomNumber).localeCompare(String(b.roomNumber), undefined, { numeric: true });
                 if (sortChoice === 'room-desc') return String(b.roomNumber).localeCompare(String(a.roomNumber), undefined, { numeric: true });
-                if (sortChoice === 'rent-desc') return (b.pricePerMonth || 0) - (a.pricePerMonth || 0);
-                if (sortChoice === 'rent-asc') return (a.pricePerMonth || 0) - (b.pricePerMonth || 0);
+                if (sortChoice === 'rent-desc') return (b.pricePerDay || 0) - (a.pricePerDay || 0);
+                if (sortChoice === 'rent-asc') return (a.pricePerDay || 0) - (b.pricePerDay || 0);
                 if (sortChoice === 'issues') {
                     const issuesA = (a.complaints || []).filter(c => !c.resolved).length;
                     const issuesB = (b.complaints || []).filter(c => !c.resolved).length;
@@ -1607,6 +1659,7 @@
             document.getElementById('drawerOverlay').classList.remove('open');
             document.getElementById('maintenanceDrawer').classList.remove('open');
             document.getElementById('guestDrawer').classList.remove('open');
+            document.getElementById('paymentDrawer').classList.remove('open');
             activeRoomId = null;
         }
 
@@ -1617,6 +1670,9 @@
             }
             if (document.getElementById('guestDrawer').classList.contains('open')) {
                 openGuestDrawer(activeRoomId);
+            }
+            if (document.getElementById('paymentDrawer').classList.contains('open')) {
+                openPaymentDrawer(activeRoomId);
             }
         }
 
@@ -1707,9 +1763,16 @@
 
                 const bookings = {};
                 room.tenants.forEach(t => {
-                    const key = `${t.checkInDate}_${t.checkOutDate}`;
+                    const cIn = Array.isArray(t.checkInDate)
+                        ? `${t.checkInDate[0]}-${String(t.checkInDate[1]).padStart(2, '0')}-${String(t.checkInDate[2]).padStart(2, '0')}`
+                        : String(t.checkInDate || '');
+                    const cOut = Array.isArray(t.checkOutDate)
+                        ? `${t.checkOutDate[0]}-${String(t.checkOutDate[1]).padStart(2, '0')}-${String(t.checkOutDate[2]).padStart(2, '0')}`
+                        : String(t.checkOutDate || '');
+
+                    const key = `${cIn}_${cOut}`;
                     if (!bookings[key]) bookings[key] = [];
-                    bookings[key].push(t);
+                    bookings[key].push({ ...t, checkInDate: cIn, checkOutDate: cOut });
                 });
 
                 const sortedKeys = Object.keys(bookings).sort((a, b) => a.localeCompare(b));
@@ -1718,19 +1781,44 @@
                     const family = bookings[key];
                     const checkIn = family[0].checkInDate;
                     const checkOut = family[0].checkOutDate;
+                    const stayDays = Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)));
+                    const totalStayRent = stayDays * Number(room.pricePerDay || 0);
 
                     let statusLabel = 'Currently Staying';
                     let tagStyle = 'background: var(--green-soft); color: var(--green-dark); border: 1px solid var(--green-border);';
                     let borderLeftColor = 'var(--green)';
 
-                    if (checkOut < todayStr) {
-                        statusLabel = '🔒 Past Booking (Locked)';
+                    if (checkOut < todayStr || (checkOut === todayStr && checkIn <= todayStr)) {
+                        statusLabel = '🔒 Checked Out (Locked)';
                         tagStyle = 'background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1;';
                         borderLeftColor = '#94a3b8';
                     } else if (checkIn > todayStr) {
                         statusLabel = 'Upcoming Booking';
                         tagStyle = 'background: var(--amber-soft); color: #b45309; border: 1px solid var(--amber-border);';
                         borderLeftColor = 'var(--amber)';
+                    }
+
+                    let cancelActionHTML = '';
+                    if (checkIn > todayStr) {
+                        cancelActionHTML = `
+                            <div style="border-top: 1px solid var(--border-light); padding-top: 8px; display: flex; justify-content: flex-end;">
+                                <button class="btn-ticket-state"
+                                        style="background: var(--red-soft); color: var(--red-dark); border-color: var(--red-border);"
+                                        onclick="cancelBooking(${room.id}, '${checkIn}', '${checkOut}', true)">
+                                    ✕ Cancel Booking
+                                </button>
+                            </div>
+                        `;
+                    } else if (checkOut >= todayStr) {
+                        cancelActionHTML = `
+                            <div style="border-top: 1px solid var(--border-light); padding-top: 8px; display: flex; justify-content: flex-end;">
+                                <button class="btn-ticket-state"
+                                        style="background: var(--amber-soft); color: #b45309; border-color: var(--amber-border);"
+                                        onclick="cancelBooking(${room.id}, '${checkIn}', '${checkOut}', false)">
+                                    🚪 Early Checkout / Cancel Remaining Days
+                                </button>
+                            </div>
+                        `;
                     }
 
                     const card = document.createElement('div');
@@ -1761,11 +1849,12 @@
                         <div class="lease-head">
                             <div>
                                 <div class="title">👪 Family Booking (${family.length})</div>
-                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">📅 ${checkIn} → ${checkOut}</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">📅 ${checkIn} → ${checkOut} (${stayDays}d • ₹${totalStayRent.toLocaleString('en-IN')})</div>
                             </div>
                             <span class="lease-status-tag" style="${tagStyle}">${statusLabel}</span>
                         </div>
                         <div>${guestsHTML}</div>
+                        ${cancelActionHTML}
                     `;
                     list.appendChild(card);
                 });
@@ -1773,6 +1862,31 @@
 
             document.getElementById('drawerOverlay').classList.add('open');
             document.getElementById('guestDrawer').classList.add('open');
+        }
+
+        function cancelBooking(roomId, checkInDate, checkOutDate, isUpcoming) {
+            const promptMsg = isUpcoming
+                ? `Cancel upcoming booking (${checkInDate} → ${checkOutDate})?\n\nThis will delete the booking and release the dates on the calendar.`
+                : `Process early checkout / cancel remaining days for (${checkInDate} → ${checkOutDate})?\n\nApproved payments remain locked, unapproved future days will be cancelled, and the room will become vacant.`;
+
+            if (!confirm(promptMsg)) return;
+
+            const params = new URLSearchParams();
+            params.append('checkInDate', checkInDate);
+            params.append('checkOutDate', checkOutDate);
+
+            fetch(`/api/rooms/${roomId}/bookings/cancel?${params.toString()}`, {
+                method: 'DELETE'
+            })
+            .then(async res => {
+                if (!res.ok) throw new Error(await res.text());
+                return res.text();
+            })
+            .then(msg => {
+                showNotification(msg, "success");
+                fetchLedger();
+            })
+            .catch(err => showNotification(err.message, "error"));
         }
 
         function uploadIdPhotoLater(tenantId, inputElement) {
@@ -1808,6 +1922,144 @@
         }
 
         /* ----------------------------------------------------
+           DRAWER 3: DAILY PAYMENT APPROVAL LEDGER (IMMUTABLE)
+           ---------------------------------------------------- */
+        function openPaymentDrawer(roomId) {
+            const room = allRoomsMemory.find(r => r.id === roomId);
+            if (!room) return;
+
+            activeRoomId = roomId;
+            document.getElementById('payRoomHeading').textContent = `Room ${room.roomNumber} — Daily Payments`;
+            document.getElementById('paySummarySub').textContent = "Fetching daily billing records...";
+            const list = document.getElementById('dailyPaymentList');
+            list.innerHTML = `<div class="empty-placeholder">Loading daily payment records...</div>`;
+
+            document.getElementById('drawerOverlay').classList.add('open');
+            document.getElementById('paymentDrawer').classList.add('open');
+
+            fetch(`/api/rooms/${roomId}/payments`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Could not load payment ledger");
+                    return res.json();
+                })
+                .then(payments => renderDailyPayments(payments, room))
+                .catch(err => {
+                    list.innerHTML = `<div class="empty-placeholder">${escapeHtml(err.message)}</div>`;
+                });
+        }
+
+        function renderDailyPayments(payments, room) {
+            const list = document.getElementById('dailyPaymentList');
+
+            if (!payments || payments.length === 0) {
+                document.getElementById('paySummarySub').textContent = "No daily billing entries generated yet";
+                list.innerHTML = `<div class="empty-placeholder">No daily payment records on file for Room ${escapeHtml(room.roomNumber)}.<br>Register a tenant check-in to generate daily payment rows.</div>`;
+                return;
+            }
+
+            const approvedList = payments.filter(p => p.approved);
+            const pendingList = payments.filter(p => !p.approved);
+
+            const approvedTotal = approvedList.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+            const pendingTotal = pendingList.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+
+            document.getElementById('paySummarySub').innerHTML =
+                `<strong style="color:var(--green-dark);">Paid (${approvedList.length}d): ₹${approvedTotal.toLocaleString('en-IN')}</strong> • <strong style="color:#b45309;">Pending (${pendingList.length}d): ₹${pendingTotal.toLocaleString('en-IN')}</strong>`;
+
+            list.innerHTML = payments.map(p => {
+                // Find primary guest name for context if available
+                const matchedGuest = (room.tenants || []).find(t => t.id === p.tenantId);
+                const guestLabel = matchedGuest ? ` • Guest: ${escapeHtml(matchedGuest.fullName)}` : '';
+
+                if (p.approved) {
+                    const approvedTime = p.approvedAt
+                        ? new Date(p.approvedAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+                        : 'Verified';
+
+                    return `
+                        <div class="lease-card" style="border-left-color: var(--green); background: #fafdfb;">
+                            <div class="lease-head" style="border-bottom: none; padding-bottom: 0;">
+                                <div>
+                                    <div class="title">📅 ${escapeHtml(p.stayDate)} — ₹${Number(p.amount || 0).toLocaleString('en-IN')}</div>
+                                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                                        Ledger ID #${p.id}${guestLabel}
+                                    </div>
+                                </div>
+                                <span class="lease-status-tag" style="background: var(--green-soft); color: var(--green-dark); border: 1px solid var(--green-border);">
+                                    🔒 Approved & Locked
+                                </span>
+                            </div>
+                            <div class="payment-audit-box">
+                                <div><strong>Payment Mode:</strong> ${escapeHtml(p.paymentMode || 'Cash')}</div>
+                                <div><strong>Transaction / Receipt Ref:</strong> ${p.transactionRef ? escapeHtml(p.transactionRef) : '<span style="color:var(--text-light);">Not provided</span>'}</div>
+                                <div><strong>Approved Timestamp:</strong> ${approvedTime}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="lease-card" style="border-left-color: var(--amber);">
+                        <div class="lease-head">
+                            <div>
+                                <div class="title">📅 ${escapeHtml(p.stayDate)} — ₹${Number(p.amount || 0).toLocaleString('en-IN')}</div>
+                                <div style="font-size: 11px; color: #b45309; margin-top: 2px;">
+                                    Awaiting Owner Verification${guestLabel}
+                                </div>
+                            </div>
+                            <span class="lease-status-tag" style="background: var(--amber-soft); color: #b45309; border: 1px solid var(--amber-border);">
+                                ⏳ Pending
+                            </span>
+                        </div>
+                        <div class="payment-controls-row">
+                            <select id="mode-${p.id}" class="styled-select" style="padding: 6px 8px; font-size: 12px;">
+                                <option value="UPI">UPI</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                            </select>
+                            <input type="text" id="ref-${p.id}" class="styled-select" placeholder="UTR / Receipt # (Optional)" style="flex: 1; min-width: 120px; padding: 6px 8px; font-size: 12px;">
+                            <button class="btn-ticket-state resolve" onclick="approveDailyPayment(${p.id})" style="padding: 6px 12px;">
+                                ✓ Approve & Lock
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function approveDailyPayment(paymentId) {
+            const modeEl = document.getElementById(`mode-${paymentId}`);
+            const refEl = document.getElementById(`ref-${paymentId}`);
+            if (!modeEl) return;
+
+            const mode = modeEl.value;
+            const ref = refEl ? refEl.value.trim() : '';
+
+            if (!confirm(`Confirm approval of this daily payment via ${mode}?\n\nOnce approved, this payment status is permanently locked and cannot be modified or reverted.`)) {
+                return;
+            }
+
+            const params = new URLSearchParams();
+            params.append('paymentMode', mode);
+            params.append('transactionRef', ref);
+
+            fetch(`/api/payments/${paymentId}/approve`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            })
+            .then(async res => {
+                if (!res.ok) throw new Error(await res.text());
+                return res.json();
+            })
+            .then(() => {
+                showNotification("Daily payment approved & permanently locked", "success");
+                openPaymentDrawer(activeRoomId);
+            })
+            .catch(err => showNotification(err.message, "error"));
+        }
+
+        /* ----------------------------------------------------
            UTILITIES: LIGHTBOX, TOOLTIP, CSV & ESCAPING
            ---------------------------------------------------- */
         function openLightbox(src) {
@@ -1832,12 +2084,12 @@
         }
 
         function exportCsvReport() {
-            const headers = ["Room Number", "Title", "Location", "Monthly Rent", "Capacity", "Status", "Active Guests"];
+            const headers = ["Room Number", "Title", "Location", "Daily Tariff", "Capacity", "Status", "Active Guests"];
             const rows = allRoomsMemory.map(r => [
                 `"${r.roomNumber}"`,
                 `"${r.title || ''}"`,
                 `"${r.location || ''}"`,
-                r.pricePerMonth || 0,
+                r.pricePerDay || 0,
                 r.capacity || 2,
                 r.available ? "Vacant" : "Occupied",
                 (r.tenants || []).length
